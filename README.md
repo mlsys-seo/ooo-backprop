@@ -1,5 +1,11 @@
 # OutOfOrder_Backprop
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+OutOfOrder Backprop is ~~~
+
+## News
+- [OOO-Backprop Paper](link) has been accepted to EuroSys'22!
 
 ## Performance
 
@@ -8,12 +14,26 @@
 >Pipeline-parallel Training.
 
 >Data-parallel Training.
-  
-## 1. Instructions for running single-GPU training experiment
 
-## 2. Instructions for running data-parallel training experiment
+## Quick Start
 
-## 3. Instructions for running pipeline-parallel training experiment
+Below, we introduce two options how to reproduce our experiments.
 
+### Start at AWS
 
- 
+#### [Single-GPU Training](impl/single_gpu/README.md)
+
+#### [Pipeline-Parallel Training](impl/pipeline_parallel/README.md)
+
+#### [Data-Parallel Training](impl/data_parallel/README.md)
+
+### Build from source code
+
+You can try out running the experiments via build or pull our docker image.
+
+```
+docker pull ~~
+```
+
+## Publications
+1. [EuroSys] "[PAPER NAME](link)". Hyungjun Oh, --, --, --, Jiwon Seo.

@@ -42,7 +42,9 @@ Below, we introduce two options how to reproduce our experiments.
 You can try out running the experiments via build or pull our docker image.
 
 ```
-docker pull ~~
+git clone --recursive https://github.com/mlsys-seo/OutOfOrder_Backprop.git
+cd tensorflow
+ooo_tensorflow_build.sh
 ```
 
 ## Publications

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from OOO_backprop import dp_schedule
+from OOO_backprop.schedulers import dp_schedule
 
 def pad(inputs, kernel_size):
     pad_total = kernel_size - 1

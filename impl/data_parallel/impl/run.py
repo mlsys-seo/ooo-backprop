@@ -10,8 +10,8 @@ import byteps.tensorflow as byteps
 from OOO_backprop import get_args
 from OOO_backprop import print_timestep
 from OOO_backprop import print_log
-from OOO_backprop.models import ResNet
-from OOO_backprop.dp_schedule import OOO_ScheduleHelper
+from OOO_backprop.models.ResNet import ResNet
+from OOO_backprop.scheduler.dp_schedule import OOO_ScheduleHelper
 
 tf.compat.v1.disable_eager_execution()
 args = None
@@ -26,7 +26,7 @@ def get_dataset(batch_size, dataset_str="MNIST"):
         )
         dataset = dataset.repeat().shuffle(10000).batch(batch_size)
     
-    else: # dummy data
+    else: # synthetic data
         num_classes = 1001
 
         x_data = np.array([np.ones((224, 224, 3), dtype=np.float32)])
@@ -43,7 +43,7 @@ def train():
     global args
 
     # set dataset
-    dataset, num_classes = get_dataset(args.batch_size, "Dummy")
+    dataset, num_classes = get_dataset(args.batch_size, "synthetic")
     iterator = tf.compat.v1.data.make_initializable_iterator(dataset)
 
     # set model, loss, optimizer
@@ -52,40 +52,14 @@ def train():
     optimizer = tf.compat.v1.train.RMSPropOptimizer(0.001 * byteps.size())
     optimizer = byteps.DistributedOptimizer(optimizer)
 
-
     # construct a graph with calculating forward
     X, labels = iterator.get_next()
     probs = model(X, training=True)
     loss_value = loss(labels, probs)
 
-
     # get last training operations from dafault graph
     graph = tf.compat.v1.get_default_graph()
     global_step = tf.compat.v1.train.get_or_create_global_step(graph)
-
-    # if args.debug_print == True:
-    #     print("=============== data shape ==============")
-    #     print_log(X.shape)
-    #     print_log(labels.shape)
-    #     print("=========================================")
-
-    #     print("=============== print ops ===============")
-    #     conv_ops_list = []
-    #     async_count = 0
-    #     for op in graph.get_operations():
-    #         if "CONV_LAYER_" in op.name:
-    #         # if "CONV_LAYER_" in op.name and len(op.name.split("/")) == 2 and "Conv2D" in op.name:
-    #             conv_ops_list.append(op)
-    #             if args.async_op in op.name:
-    #                 async_count += 1
-        
-    #     print_log(f"num of CONV: {len(conv_ops_list)}, num of Async_CONV: {async_count}")
-
-    #     for op in conv_ops_list:
-    #         print_log(f"{op.name}", "B")
-    #         print_log(f"{op.control_inputs}", "Y")
-    #         print_log(f"{op.op_def}", "G")
-    #     print("=========================================")
 
     schedule_helper = OOO_ScheduleHelper(optimizer)
     train_op = schedule_helper.schedule_ops(

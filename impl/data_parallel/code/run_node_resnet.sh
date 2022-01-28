@@ -62,7 +62,6 @@ echo "DMLC DMLC_INTERFACE: "$DMLC_INTERFACE
 echo "##########################################################"
 echo ""
 
-#export BYTEPS_SERVER_ENGINE_THREAD=8
 export CUDA_VISIBLE_DEVICES=$GPU_IDX
 
 if [ $GPU_IDX -lt $NUM_SERVER_PER_NODE ] # GPU_IDX is Local Index
@@ -70,12 +69,22 @@ then
     $CODE_DIR/run_server.sh $NODE_HOST $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER &
 fi
 
+if [ $NVPROF -lt 1 ] # GPU_IDX is Local Index
+then
+    bpslaunch nvprof -fo $ROOT_DIR/outputs/profile-$INDEX.nvpp python3 $CODE_DIR/run.py \
+        --model_size $MODEL_SIZE \
+        --batch_size $BATCH_SIZE \
+        --reverse_first_k $REVERSE_FIRST_K \
+        --debug_print $DEBUG_PRINT \
+        --num_training_step $NUM_TRAINING_STEP
 
-bpslaunch nvprof -fo $ROOT_DIR/outputs/profile-$INDEX.nvpp python3 $CODE_DIR/run.py \
-    --model_size $MODEL_SIZE \
-    --batch_size $BATCH_SIZE \
-    --reverse_first_k $REVERSE_FIRST_K \
-    --debug_print $DEBUG_PRINT \
-    --num_training_step $NUM_TRAINING_STEP
+else
+    bpslaunch python3 $CODE_DIR/run.py \
+        --model_size $MODEL_SIZE \
+        --batch_size $BATCH_SIZE \
+        --reverse_first_k $REVERSE_FIRST_K \
+        --debug_print $DEBUG_PRINT \
+        --num_training_step $NUM_TRAINING_STEP
+fi
 
 echo "################### Node(Worker) Done ###################"

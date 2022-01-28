@@ -27,4 +27,4 @@ docker run \
     --name ooo-scheduler \
 	-e DMLC_INTERFACE=$DMLC_INTERFACE \
     $DOCKER_IMAGE \
-	$ROOT_DIR/code/run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER
+	$ROOT_DIR/examples/run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER

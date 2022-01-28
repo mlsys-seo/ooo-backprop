@@ -11,5 +11,9 @@
 
 
 ```bash
+$ docker build -f ./docker/Dockerfile .
+```
+
+```bash
 $ ./scripts/remote/run.sh
 ```

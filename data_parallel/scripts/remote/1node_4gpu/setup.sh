@@ -40,7 +40,7 @@ export SSH_ID="cheezestick"
 export DMLC_INTERFACE=enp2s0f1
 
 
-export ROOT_DIR="/root/OOO_BackProp_BytePS"
+export ROOT_DIR="/workspace/data_parallel"
 
 export OUTPUT_DIR=$(dirname $(dirname $(dirname $(realpath $0))))
 

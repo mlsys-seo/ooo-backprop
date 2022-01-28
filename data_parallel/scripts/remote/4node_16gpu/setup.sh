@@ -34,7 +34,7 @@ export SSH_KEY_PATH="~/.ssh/hanyang_bdsl_oregon.pem"
 export SSH_ID="ubuntu"
 export DMLC_INTERFACE=ens3
 
-export ROOT_DIR="/root/OOO_BackProp_BytePS"
+export ROOT_DIR="/workspace/data_parallel"
 
 export OUTPUT_DIR=$(dirname $(dirname $(dirname $(realpath $0))))
 

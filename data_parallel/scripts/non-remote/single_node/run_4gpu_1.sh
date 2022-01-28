@@ -18,5 +18,5 @@ export DEBUG_PRINT=0
 
 ROOT_DIR=$(dirname $(dirname $(dirname $(realpath $0))))
 
-$ROOT_DIR/code/run_node_resnet.sh \
+$ROOT_DIR/examples/run_node_resnet.sh \
 		$MODEL_SIZE $BATCH_SIZE $NUM_TRAINING_STEP $REVERSE_FIRST_K $MASTER_HOST $MASTER_PORT $NODE_HOST $NUM_WORKER $NUM_SERVER $NUM_SERVER_PER_NODE $INDEX $GPU_IDX $DEBUG_PRINT 

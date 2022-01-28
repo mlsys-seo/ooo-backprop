@@ -15,4 +15,4 @@ export DEBUG_PRINT=0
 
 ROOT_DIR=$(dirname $(dirname $(dirname $(realpath $0))))
 
-$ROOT_DIR/code/run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER
+$ROOT_DIR/examples/run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER

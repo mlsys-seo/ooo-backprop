@@ -24,12 +24,16 @@ RUN apt-get update && apt-get install -y \
     rdmacm-utils \
     libibverbs-dev
 
-COPY ../. /workspace/
+COPY . /workspace/
 WORKDIR /workspace
 
-RUN pip3 install \
-    tensorflow==2.4 &&\
-    python3 ./modules/byteps/setup.py install
+RUN pip3 install --upgrade pip &&\
+    pip3 install \
+        tensorflow==2.4.1
+
+RUN ls &&\
+    cd ./modules/byteps &&\
+    python3 setup.py install
 
 # TENSORFLOW 수정
 

@@ -668,12 +668,7 @@ def _GradientsHelper(ys,
                       None,
                       gradient_uid,
                       ignore_existing=True):
-                    
-                    # ------ modified for OOO Backprop ------
-                    # in_grads = control_flow_ops.tuple(in_grads)
-                    in_grads = _AsList(in_grads)
-                    # ------ modified for OOO Backprop end ------
-
+                    in_grads = control_flow_ops.tuple(in_grads)
           _LogOpGradients(op, out_grads, in_grads)
         else:
           # If no grad_fn is defined or none of out_grads is available,

@@ -4,6 +4,11 @@
 
 OutOfOrder Backprop is ~~~
 
+the code of the ~~~ is in ```tensorflow/```.
+the code of the ~~~ is in ```byteps/```
+The experiments presented in the paper, including replication instructions, are in ```experiments/```
+
+
 ## News
 - [OOO-Backprop Paper](link) has been accepted to EuroSys'22!
 

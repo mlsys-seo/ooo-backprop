@@ -4,9 +4,9 @@
 
 OutOfOrder Backprop is ~~~
 
-the code of the ~~~ is in ```tensorflow/```.
-the code of the ~~~ is in ```byteps/```
-The experiments presented in the paper, including replication instructions, are in ```experiments/```
+the code of the ~~~ is in ```tensorflow/```.  
+the code of the ~~~ is in ```byteps/```.  
+The experiments presented in the paper, including replication instructions, are in ```experiments/```.  
 
 
 ## News

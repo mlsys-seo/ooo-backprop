@@ -17,17 +17,15 @@ OutOfOrder Backprop is ~~~
 
 ## Quick Start
 
-We provide a [step-by-step tutorial](docs/step-by-step-tutorial.md) for you to run benchmark training tasks. The simplest way to start is to use our [docker images](docker). Refer to [Documentations](docs) for how to [launch distributed jobs](docs/running.md) and more [detailed configurations](docs/env.md). After you can start BytePS, read [best practice](docs/best-practice.md) to get the best performance.
-
-Below, we explain how to install BytePS by yourself. There are two options.
+Below, we introduce two options how to reproduce our experiments.
 
 ### Start at AWS
 
->[Single-GPU Training](impl/single-gpu/README.md).
+####[Single-GPU Training](impl/single-gpu/README.md).
 
->[Pipeline-Parallel Training](impl/single-gpu/README.md).
+####[Pipeline-Parallel Training](impl/single-gpu/README.md).
 
->[Data-Parallel Training](impl/single-gpu/README.md).
+####[Data-Parallel Training](impl/single-gpu/README.md).
 
 ### Build from source code
 

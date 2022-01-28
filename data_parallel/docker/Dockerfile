@@ -1,10 +1,5 @@
 FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
 
-ARG https_proxy
-ARG http_proxy
-
-ARG BYTEPS_BASE_PATH=/usr/local
-
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
@@ -27,19 +22,17 @@ RUN apt-get update && apt-get install -y \
     librdmacm-dev \
     ibverbs-utils \
     rdmacm-utils \
-    libibverbs-dev \ # bazel
+    libibverbs-dev
 
 COPY ../. /workspace/
 WORKDIR /workspace
 
+RUN pip3 install \
+    tensorflow==2.4 &&\
+    python3 ./modules/byteps/setup.py install
 
-
+# TENSORFLOW 수정
 
 ENV LD_LIBRARY_PATH /usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH
 
-
-WORKDIR /workspace
-RUN cd $BYTEPS_BASE_PATH &&\
-    git clone --recursive -b $BYTEPS_BRANCH $BYTEPS_GIT_LINK &&\
-    cd $BYTEPS_PATH &&\
-    python3 setup.py install
+CMD /bin/bash

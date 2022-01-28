@@ -7,11 +7,11 @@ import numpy as np
 import tensorflow as tf
 import byteps.tensorflow as byteps
 
-from OOO_backprop import get_args
-from OOO_backprop import print_timestep
-from OOO_backprop import print_log
-from OOO_backprop.models.ResNet import ResNet
-from OOO_backprop.scheduler.dp_schedule import OOO_ScheduleHelper
+from ../modules/OOO_backprop import get_args
+from ../modules/OOO_backprop import print_timestep
+from ../modules/OOO_backprop import print_log
+from ../modules/OOO_backprop.models.ResNet import ResNet
+from ../modules/OOO_backprop.scheduler.dp_schedule import OOO_ScheduleHelper
 
 tf.compat.v1.disable_eager_execution()
 args = None

@@ -21,11 +21,11 @@ Below, we introduce two options how to reproduce our experiments.
 
 ### Start at AWS
 
-####[Single-GPU Training](impl/single-gpu/README.md).
+#### [Single-GPU Training](impl/single-gpu/README.md).
 
-####[Pipeline-Parallel Training](impl/single-gpu/README.md).
+#### [Pipeline-Parallel Training](impl/single-gpu/README.md).
 
-####[Data-Parallel Training](impl/single-gpu/README.md).
+#### [Data-Parallel Training](impl/single-gpu/README.md).
 
 ### Build from source code
 

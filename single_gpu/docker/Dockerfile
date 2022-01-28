@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     vim \
     cmake \
-    zip \
     net-tools \
     python3 \
     python3-dev \
@@ -23,15 +22,16 @@ RUN apt-get update && apt-get install -y \
     librdmacm-dev \
     ibverbs-utils \
     rdmacm-utils \
-    libibverbs-dev 
-
+    libibverbs-dev
 
 # bazel
-COPY ../. /workspace/
+
+COPY . /workspace/
 WORKDIR /workspace
 
-RUN pip3 install \
-    tensorflow==2.4
+RUN pip3 install --upgrade pip &&\
+    pip3 install \
+        tensorflow==2.4.1
 
 # TENSORFLOW 수정
 

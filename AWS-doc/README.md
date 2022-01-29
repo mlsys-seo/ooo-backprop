@@ -10,4 +10,4 @@ To setup an AWS instance for the experiments, oneneeds to take the follow steps.
   p3.8xlarge
 
 ## Pipeline-Parallel Training
-  andp3.16xlarge
+  p3.16xlarge

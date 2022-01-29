@@ -70,7 +70,7 @@ then
     $CODE_DIR/run_server.sh $NODE_HOST $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER &
 fi
 
-if [ $NVPROF -lt 1 ] # GPU_IDX is Local Index
+if [[ $NVPROF == "1" ]] # GPU_IDX is Local Index
 then
     bpslaunch nvprof -fo $ROOT_DIR/outputs/profile-$INDEX.nvpp python3 $CODE_DIR/run.py \
         --model_size $MODEL_SIZE \

@@ -1,5 +1,4 @@
 # Implementation OOO of Data-Parallel on BytePS
-
 ## 1. Setup
 
 ### AWS instance

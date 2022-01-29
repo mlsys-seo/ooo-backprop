@@ -11,7 +11,7 @@ We propose three scheduling algorithms based on ooo backprop. For single-GPU tra
 
 ```expr/``` Python scripts for defining and training the eval-uated models. Three sub-directories contain the code forthe three sets of experiments.
 
-```AWS-doc/``` Documentation for setting AWS instances forthe experiments
+```AWS-doc/``` Documentation for setting AWS instances forthe experiments.
 
 ```scripts/``` Bash scripts for running all the experiments.
 

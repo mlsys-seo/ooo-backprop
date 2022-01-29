@@ -5,9 +5,13 @@
 OutOfOrder Backprop is an effective scheduling technique for neural network training. By exploiting the dependencies of gradient computations, ooo backprop enables to reorder their executions to make the most of the GPU resources. We show that the GPU utilization in single- and multi-GPU training can be commonly improve by applying ooo backprop and prioritizing critical operations. 
 We propose three scheduling algorithms based on ooo backprop. For single-GPU training, we schedule with multi-stream ooo computation to mask the kernel launch overhead. In data-parallel training, we reorder the gradient computations to maximize the overlapping of computation and parameter communication; in pipeline-parallel training, we prioritize critical gradient computations to reduce the pipeline stalls.
 
-```tensorflow/``` in 
+```tensorflow/``` ~~
 
-the code of the ~~~ is in ```byteps/```.  
+```byteps/``` ~~~
+
+```scripts``` ~~~
+
+```AWS-doc``` ~~~
 
 The experiments presented in the paper, including replication instructions, are in ```expr/```.  
 

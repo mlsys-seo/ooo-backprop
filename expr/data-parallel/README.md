@@ -2,29 +2,26 @@
 
 ## 1. Setup
 
-### Build from Dockerfile at local
-```bash
-$ docker build -t ooo-backprop/data-parallel -f docker/Dockerfile .
+### AWS instance
+```
+Step 1: Choose an Amazon Machine Images(AMI)
+  Deep Learning AMI (Ubuntu 18.04) Version 56.0 
 ```
 
-### Pull Docker Image
-```bash
-$ docker pull ooo-backprop/data-parallel:latest
+```
+Step 2: Choose an Instance Type 
+  1 ~ 12 p3.8xlarge Instance
 ```
 
-## 1. Setup
-1. Launch 1 ~ 12 AWS p3.8xlarge instances
-1. Copy the downloaded images to the AWS instances
-1. Run the following commands in all the instances
-
-## 2. Run on AWS
-- Environment setting
-  - Amazon AWS p3.8xlarge
-
+```
+STep 3: Configure security Group
+  같은 그룹에서 사용할 포트를 열어야함.
+```
 
 ## 2. Expreriments
 
-
 ```bash
-$ ./scripts/remote/run.sh
+$ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
+$ cd scripts/
+$ ./run_gpu4_resnet50.sh
 ```

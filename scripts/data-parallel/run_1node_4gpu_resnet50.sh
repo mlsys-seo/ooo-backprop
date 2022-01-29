@@ -10,8 +10,10 @@ export NUM_TRAINING_STEP=50
 export MASTER_HOST=127.0.0.1
 export MASTER_PORT=1234
 
-export NODE_HOST_LIST=( )
+NODE_HOST_LIST=( )
 NODE_HOST_LIST[0]=127.0.0.1
+
+export NODE_HOSTS_STRING=${NODE_HOST_LIST[@]}
 
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 
@@ -26,7 +28,7 @@ export DEBUG_PRINT=0
 export DEBUG_C_PRINT=0
 
 # set up network
-export DOCKER_IMAGE="mlsys.duckdns.org:9999/ooo-backprop-byteps:tf2"
+export DOCKER_IMAGE="mlsys.duckdns.org:9999/ooo-backprop-byteps:tf2-fix"
 export SSH_KEY_PATH="~/.ssh/bdsl_rsa"
 export SSH_ID="cheezestick"
 export DMLC_INTERFACE=enp2s0f1

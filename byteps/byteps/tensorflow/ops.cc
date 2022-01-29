@@ -446,7 +446,8 @@ public:
     // }
 
     auto shape_ = get_output_shape(s0, s1, s2, s3);
-    ::tensorflow::Tensor* output = communication_manager.get_savedTensors(op_index);
+    ::tensorflow::Tensor* output = nullptr;
+    context->set_output(0, *( communication_manager.get_savedTensors(op_index) ));
 
     OP_REQUIRES_OK( context, context->allocate_output(0, shape_, &output));
   }

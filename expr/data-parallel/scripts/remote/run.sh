@@ -1,9 +1,14 @@
 #!/bin/bash
+export REMOTE_ARG=$1
 
-if [$1 != "pre-preset"]
+if [[ $REMOTE_ARG == "preset" ]]
 then
+    declare -a NODE_HOST_LIST=($NODE_HOSTS_STRING)
+else
     source $(dirname $0)/setup.sh
 fi
+
+
 
 echo ""
 echo "==================================== setup ===================================="
@@ -36,25 +41,28 @@ echo "RESULT CONFIGURE :: OUTPUT_DIR: "$OUTPUT_DIR
 echo "==============================================================================="
 echo ""
 
-export DOCKER_ROOT_DIR="/workspace"
+export DOCKER_ROOT_DIR=""
 
 $(dirname $(realpath $0))/pull_image.sh
 
-$(dirname $(realpath $0))/kill_all.sh
+$(dirname $(realpath $0))/kill_all.sh &&
 
 echo ""
+echo ""
+echo "==============================================================================="
 echo "::: RUN REMOTE SCHEDULER "$MASTER_HOST":"$MASTER_PORT" :::"
+
 ssh -i $SSH_KEY_PATH -f $SSH_ID@$MASTER_HOST \
     docker run -d \
         --rm --privileged --ipc=host --net=host --gpus=all \
         --name ooo-scheduler \
         $DOCKER_IMAGE \
-        $DOCKER_ROOT_DIR/code/run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER &&
+        /workspace/code/run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER &&
 
 DETACH=""
 for node_idx in "${!NODE_HOST_LIST[@]}"
 do
-    NODE_HOST="${NODE_HOST_LIST[$node_idx]}ssh "
+    NODE_HOST="${NODE_HOST_LIST[$node_idx]}"
 
     for ((local_idx = 0 ; local_idx < $NUM_WORKER_PER_NODE ; local_idx++))
     do
@@ -62,29 +70,43 @@ do
         INDEX=`expr $PRE_INDEX + $local_idx`
         GPU_IDX=$local_idx
 
-        if [ $DETACH = "" ]
+
+        echo ""
+        echo "::: RUN REMOTE NODE "$node_idx": "$NODE_HOST" | IDX "$INDEX" | GPU_IDX: "$GPU_IDX" $DETACH:::"
+
+        # echo "
+        # ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
+        #     docker run $DETACH \
+        #         --rm --privileged --ipc=host --net=host --gpus=all \
+        #         -v $OUTPUT_DIR:$DOCKER_ROOT_DIR/outputs \
+        #         -e DMLC_INTERFACE=$DMLC_INTERFACE \
+        #         --name ooo-worker-$INDEX \
+        #         $DOCKER_IMAGE \                
+        #         $DOCKER_ROOT_DIR/code/run_node_resnet.sh \
+        #         $MODEL_SIZE $BATCH_SIZE $NUM_TRAINING_STEP $REVERSE_FIRST_K $MASTER_HOST $MASTER_PORT $NODE_HOST $NUM_WORKER $NUM_SERVER $NUM_SERVER_PER_NODE $INDEX $GPU_IDX $DEBUG_PRINT $DEBUG_C_PRINT"
+
+        ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
+            "docker run $DETACH --rm --privileged \
+                --ipc=host --net=host --gpus=all \
+                -v $OUTPUT_DIR:/outputs \
+                -e DMLC_INTERFACE=$DMLC_INTERFACE \
+                --name ooo-worker-$INDEX \
+                $DOCKER_IMAGE \
+                /workspace/code/run_node_resnet.sh \
+                $MODEL_SIZE $BATCH_SIZE $NUM_TRAINING_STEP $REVERSE_FIRST_K $MASTER_HOST $MASTER_PORT $NODE_HOST $NUM_WORKER $NUM_SERVER $NUM_SERVER_PER_NODE $INDEX $GPU_IDX $DEBUG_PRINT $DEBUG_C_PRINT" &&
+        echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+
+        
+        if [[ $DETACH == "" ]]
         then
             DETACH="-d"
         fi
 
-        echo ""
-        echo "::: RUN REMOTE NODE "$node_idx": "$NODE_HOST" | IDX "$INDEX" | GPU_IDX: "$GPU_IDX" :::"
-        ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
-            docker run $DETACH \
-                --rm --privileged --ipc=host --net=host --gpus=all \
-                -v $OUTPUT_DIR:$DOCKER_ROOT_DIR/outputs \
-                -e DMLC_INTERFACE=$DMLC_INTERFACE \
-                --name ooo-worker-$INDEX \
-                $DOCKER_IMAGE \
-                $DOCKER_ROOT_DIR/code/run_node_resnet.sh \
-                $MODEL_SIZE $BATCH_SIZE $NUM_TRAINING_STEP $REVERSE_FIRST_K $MASTER_HOST $MASTER_PORT $NODE_HOST $NUM_WORKER $NUM_SERVER $NUM_SERVER_PER_NODE $INDEX $GPU_IDX $DEBUG_PRINT $DEBUG_C_PRINT &&
-        echo ""
     done
 done
+echo "=================================== RUN DONE =================================="
 
-echo "RUN DONE"
-
-ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
-    docker attach ooo-worker-0
+# ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
+#     docker attach ooo-worker-0
 
 # docker attach $FIRST_CONTAINER_NAME

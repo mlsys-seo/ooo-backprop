@@ -28,8 +28,8 @@ def is_w_grad_op(op):
     else:
         return False
 
-def is_conv_op(op):
-    if "CONV_LAYER_" in op.name:
+def is_conv_op(op_name):
+    if "CONV_LAYER_" in op_name:
         return True
     else:
         return False

@@ -1,14 +1,20 @@
-# OutOfOrder_Backprop
+# OutOfOrder Backprop
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-OutOfOrder Backprop is ~~~
+OutOfOrder Backprop is an effective scheduling technique for neural network training. By exploiting the dependencies of gradient computations, ooo backprop enables to reorder their executions to make the most of the GPU resources. We show that the GPU utilization in single- and multi-GPU training can be commonly improve by applying ooo backprop and prioritizing critical operations. 
+We propose three scheduling algorithms based on ooo backprop. For single-GPU training, we schedule with multi-stream ooo computation to mask the kernel launch overhead. In data-parallel training, we reorder the gradient computations to maximize the overlapping of computation and parameter communication; in pipeline-parallel training, we prioritize critical gradient computations to reduce the pipeline stalls.
 
-the code of the ~~~ is in ```tensorflow/```.  
+```tensorflow/``` Source code of TensorFlow (v2.4) modifiedto (optionally) run with ooo backprop.
 
-the code of the ~~~ is in ```byteps/```.  
+```byteps/``` Source code of BytePS (v0.2.5) modified to (op-tionally) run with ooo backprop.
 
-The experiments presented in the paper, including replication instructions, are in ```experiments/```.  
+```expr/``` Python scripts for defining and training the eval-uated models. Three sub-directories contain the code forthe three sets of experiments.
+
+```AWS-doc/``` Documentation for setting AWS instances forthe experiments.
+
+```scripts/``` Bash scripts for running all the experiments.
+
 
 ## Performance
 OOO BackProp is evaluated with twelve neural network and five public datasets. Compared to the respective state of the art training systems, It improves the training throughput by 1.03-1.58x for single-GPU training, by 1.10–1.27× for data-parallel training, and by 1.41–1.99× for pipeline-parallel training.

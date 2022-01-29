@@ -12,12 +12,21 @@ export MASTER_PORT=1234
 
 export NODE_HOST_LIST=( )
 NODE_HOST_LIST[0]=127.0.0.1
+NODE_HOST_LIST[1]=127.0.0.1
+NODE_HOST_LIST[2]=127.0.0.1
+NODE_HOST_LIST[3]=127.0.0.1
+NODE_HOST_LIST[4]=127.0.0.1
+NODE_HOST_LIST[5]=127.0.0.1
+NODE_HOST_LIST[6]=127.0.0.1
+NODE_HOST_LIST[7]=127.0.0.1
+NODE_HOST_LIST[8]=127.0.0.1
+NODE_HOST_LIST[9]=127.0.0.1
 
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 
 # set up cluster-setting
-export NUM_WORKER=4
-export NUM_SERVER=1
+export NUM_WORKER=40
+export NUM_SERVER=10
 
 export NUM_WORKER_PER_NODE=`expr $NUM_WORKER / $NUM_NODE`
 export NUM_SERVER_PER_NODE=`expr $NUM_SERVER / $NUM_NODE`
@@ -26,7 +35,7 @@ export DEBUG_PRINT=0
 export DEBUG_C_PRINT=0
 
 # set up network
-export DOCKER_IMAGE="mlsys.duckdns.org:9999/ooo-backprop-byteps:tf2"
+export DOCKER_IMAGE="mlsys.duckdns.org:9999/ooo-backprop-byteps:latest"
 export SSH_KEY_PATH="~/.ssh/bdsl_rsa"
 export SSH_ID="cheezestick"
 export DMLC_INTERFACE=enp2s0f1

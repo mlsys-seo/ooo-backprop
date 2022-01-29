@@ -14,7 +14,7 @@ Step 2: Choose an Instance Type
 
 ```
 STep 3: Configure security Group
-  같은 그룹에서 사용할 포트를 열어야함.
+  Open TCPport 1234 for all instances for the worker communication
 ```
 
 ## 2. Expreriments

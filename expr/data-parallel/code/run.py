@@ -52,41 +52,16 @@ def train():
     optimizer = tf.compat.v1.train.RMSPropOptimizer(0.001 * byteps.size())
     optimizer = byteps.DistributedOptimizer(optimizer)
 
-
     # construct a graph with calculating forward
     X, labels = iterator.get_next()
     probs = model(X, training=True)
     loss_value = loss(labels, probs)
 
-
     # get last training operations from dafault graph
     graph = tf.compat.v1.get_default_graph()
     global_step = tf.compat.v1.train.get_or_create_global_step(graph)
 
-    # if args.debug_print == True:
-    #     print("=============== data shape ==============")
-    #     print_log(X.shape)
-    #     print_log(labels.shape)
-    #     print("=========================================")
-
-    #     print("=============== print ops ===============")
-    #     conv_ops_list = []
-    #     async_count = 0
-    #     for op in graph.get_operations():
-    #         if "CONV_LAYER_" in op.name:
-    #         # if "CONV_LAYER_" in op.name and len(op.name.split("/")) == 2 and "Conv2D" in op.name:
-    #             conv_ops_list.append(op)
-    #             if args.async_op in op.name:
-    #                 async_count += 1
-        
-    #     print_log(f"num of CONV: {len(conv_ops_list)}, num of Async_CONV: {async_count}")
-
-    #     for op in conv_ops_list:
-    #         print_log(f"{op.name}", "B")
-    #         print_log(f"{op.control_inputs}", "Y")
-    #         print_log(f"{op.op_def}", "G")
-    #     print("=========================================")
-
+    # cretae OOO data parallel scheduelr 
     schedule_helper = OOO_ScheduleHelper(optimizer)
     train_op = schedule_helper.schedule_ops(
         tf.compat.v1.get_default_graph(), X, loss_value, global_step

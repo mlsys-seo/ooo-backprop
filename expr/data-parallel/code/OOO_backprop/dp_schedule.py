@@ -208,32 +208,9 @@ class OOO_ScheduleHelper:
             print("=========== END REVERSE OP for K ==========")
 
     def schedule_ops(self, graph, X, loss_value, global_step):
-
-        """
-        g1, g2, g3, g4, g5
-         |   |   |   |   |
-         c   c   c   c   c
-         |   |   |   |   |
-         u   u   u   u   u
-         =================
-                                                        
-                          P      P                              |                   P4     P5
-                          |      |                              |                    |      |
-                          u      u                              |                   u4     u5
-                          |      |                              |                    |      |
-        F1 -> F2 -> F3 -> F4 -> F5 ->  g1,  g2,   g3,  g4,  g5  |  F1 -> F2 -> F3 -> F4 -> F5
-                                        |    |     |    |    |  |                                        c    c     c   c4   c5  |    
-                                        |    |     |    |    |  |
-                                        u1   u2   u3    Z    Z  |
-        """
-
         sync_ops, async_ops = self._extract_sync_and_async_ops(loss_value)
         self._set_applies_before_forwards(async_ops, X)
         self._reverse_k_schedule(graph)
-
-        # if args.debug_print:
-        #     print_graph(graph)
-        
         async_send_recv_ops = []
         for g, v in async_ops:
             async_send_recv_ops.append(comm_terminal(g))

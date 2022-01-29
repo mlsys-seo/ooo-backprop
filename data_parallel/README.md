@@ -1,11 +1,13 @@
 # Implementation OOO of Data-Parallel on BytePS
 
-## docker file을 빌드해서 실행.
-  docker 빌드 후 변경된 코드 수정?
-## docker image를 받아서 실행
-  
-## aws에 우리가 만들어둔 이미지를 사용해서 실행.
+## 1. Setup
 
+### Build Docker File
+```bash
+$ docker build -f ./docker_parallel .
+```
+
+### Pull Docker Image
 
 
 ## 1. Setup

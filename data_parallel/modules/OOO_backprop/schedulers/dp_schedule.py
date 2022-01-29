@@ -103,8 +103,6 @@ class OOO_ScheduleHelper:
         self.reverse_first_k = args.reverse_first_k
         self.num_dependency = args.num_dependency
 
-    
-
     def _remove_w_grad_dependency(self, op):
         control_dependencies = op.control_inputs
         op._remove_all_control_inputs()
@@ -125,12 +123,14 @@ class OOO_ScheduleHelper:
         return int(index)
 
     def _extract_sync_and_async_ops(self, loss_value):
+
         gvs = self.optimizer.compute_gradients(loss_value)
 
         sync_ops = []
         async_ops = []
 
         for g, v in gvs:
+
             if g is None:
                 continue
             if is_async_op(g):
@@ -141,6 +141,7 @@ class OOO_ScheduleHelper:
         return sync_ops, async_ops
 
     def _create_polling_op(self, DUMMY_PLACEHOLDER, op_index, shape, polling_op_name):
+
         polling_op = polling_data(
             DUMMY_PLACEHOLDER,
             op_index=op_index,
@@ -195,12 +196,16 @@ class OOO_ScheduleHelper:
             print("\n\n============ REVERSE OP for K ============")
 
         conv_weight_grads = {}
+
         for op in graph.get_operations():
             if is_send_recv_op(op):
                 continue
+
             if is_async_op(op) is not True:
                 continue
+
             if is_w_grad_op(op):
+
                 op_index = self._get_op_index(op.name)
                 conv_weight_grads[op_index] = op
 
@@ -253,10 +258,13 @@ class OOO_ScheduleHelper:
         #     print_graph(graph)
         
         async_send_recv_ops = []
+        
         for g, v in async_ops:
+
             async_send_recv_ops.append(comm_terminal(g))
 
         sync_apply = self.optimizer.apply_gradients(sync_ops, global_step=global_step)
+
         train_op = [sync_apply, async_send_recv_ops]
 
         return train_op

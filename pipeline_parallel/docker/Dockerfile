@@ -1,5 +1,6 @@
 FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
 
+# install packages
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
@@ -24,15 +25,18 @@ RUN apt-get update && apt-get install -y \
     rdmacm-utils \
     libibverbs-dev
 
-COPY . /workspace/
-WORKDIR /workspace
-
+# install python packages
 RUN pip3 install --upgrade pip &&\
     pip3 install \
         tensorflow==2.4.1
 
-# TENSORFLOW 수정
+COPY . /workspace/
+
+# patch tensorflow
+RUN cd /usr/local/lib/python3.6/dist-packages/tensorflow &&\
+    git patch -0 < ./modules/tensorflow/patchfile`
 
 ENV LD_LIBRARY_PATH /usr/local/cuda/lib64/stubs:$LD_LIBRARY_PATH
 
+WORKDIR /workspace
 CMD /bin/bash

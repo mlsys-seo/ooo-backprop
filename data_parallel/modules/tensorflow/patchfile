@@ -1,7 +1,7 @@
-diff --git data_parallel/modules/tensorflow/gradients_util.py data_parallel/modules/tensorflow/gradients_util.py
+diff --git python/ops/gradients_util.py python/ops/gradients_util.py
 index 8dbbd3f..8a09ec5 100644
---- data_parallel/modules/tensorflow/gradients_util.py
-+++ data_parallel/modules/tensorflow/gradients_util.py
+--- python/ops/gradients_util.py
++++ python/ops/gradients_util.py
 @@ -668,7 +668,12 @@ def _GradientsHelper(ys,
                        None,
                        gradient_uid,

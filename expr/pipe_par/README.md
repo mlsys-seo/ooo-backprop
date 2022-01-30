@@ -1,6 +1,10 @@
 # Implementation OOO of Pieline-Parallel
 
 ## 1. Environment Setup
+
+### On-Promise Setup
+- Prerequisites: nvidia driver, docker, git
+
 ### AWS Setup
 
 - Step 1: Choose an Amazon Machine Images(AMI)

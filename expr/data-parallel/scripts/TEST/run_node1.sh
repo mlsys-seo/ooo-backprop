@@ -40,8 +40,15 @@ echo "==========================================================================
 echo ""
 
 $SCRIPT_ROOT_PATH/pull_image.sh
+NODE_HOST=172.31.2.164
+PRE_INDEX=0
+for ((local_idx = 0 ; local_idx < $NUM_WORKER_PER_NODE ; local_idx++))
+do
+    INDEX=`expr $PRE_INDEX + $local_idx`
 
-$SCRIPT_ROOT_PATH/kill_all.sh &&
+    ssh -i $SSH_KEY_PATH $SSH_ID@$NODE_HOST \
+        sudo docker kill ooo-worker-$INDEX
+done
 
 echo ""
 echo ""

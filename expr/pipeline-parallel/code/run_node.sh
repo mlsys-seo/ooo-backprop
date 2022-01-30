@@ -3,7 +3,7 @@
 CODE_DIR=$(dirname $(realpath $0))
 ROOT_DIR=$(dirname $CODE_DIR)
 
-TASK=$1
+TASK=${1}
 MODEL=${2}
 PIPELINE_STYLE=${3}
 NUM_TRAINING_STEP=${4}

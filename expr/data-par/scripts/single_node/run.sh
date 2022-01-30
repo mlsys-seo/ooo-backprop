@@ -35,13 +35,13 @@ echo ""
 echo ""
 echo ""
 echo "============================== PULL DOCKER IMAGE =============================="
-docker pull $DOCKER_IMAGE &&
+sudo docker pull $DOCKER_IMAGE &&
 echo "==============================================================================="
 echo ""
 echo ""
 echo ""
 echo "=============================== Kill Containers ==============================="
-docker kill ooo-scheduler
+sudo docker kill ooo-scheduler
 
 for ((INDEX = 0 ; INDEX < $NUM_WORKER_PER_NODE ; INDEX++))
 do

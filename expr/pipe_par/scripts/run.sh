@@ -66,7 +66,7 @@ do
     if [ $NODE_IDX == 0 ]
     then
       echo "::: RUN MASTER NODE "$NODE_IDX": "$NODE_HOST" :::"
-        docker run $DETACH \
+        sudo docker run $DETACH \
                 --rm --privileged --ipc=host --net=host --gpus=all \
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
                 --name ooo-pipe-$NODE_IDX \
@@ -77,7 +77,7 @@ do
     else
       echo "::: RUN REMOTE WORKER NODE "$NODE_IDX": "$NODE_HOST" :::"
         ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
-            "docker run $DETACH \
+            "sudo docker run $DETACH \
                 --rm --privileged --ipc=host --net=host --gpus=all \
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
                 --name ooo-pipe-$NODE_IDX \

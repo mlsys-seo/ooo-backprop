@@ -50,11 +50,11 @@ echo ""
 echo "::: RUN REMOTE SCHEDULER "$MASTER_HOST":"$MASTER_PORT" :::"
 
 ssh -i $SSH_KEY_PATH -f $SSH_ID@$MASTER_HOST \
-    sudo docker run -d \
+    "sudo docker run -d \
         --rm --privileged --ipc=host --net=host --gpus=all \
         --name ooo-scheduler \
         $DOCKER_IMAGE \
-        ./run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER &&
+        ./run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER" &&
 
 DETACH=""
 for node_idx in "${!NODE_HOST_LIST[@]}"

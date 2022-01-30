@@ -54,7 +54,7 @@ echo ""
 echo "==============================================================================="
 echo "::: RUN SCHEDULER "$MASTER_HOST":"$MASTER_PORT" :::"
 
-docker run -d \
+sudo docker run -d \
     --rm --privileged --ipc=host --net=host --gpus=all \
     --name ooo-scheduler \
     $DOCKER_IMAGE \
@@ -66,7 +66,7 @@ do
     GPU_IDX=$INDEX
     echo ""
     echo "::: RUN IDX "$INDEX" :::"
-    docker run -d \
+    sudo docker run -d \
         --rm --privileged --ipc=host --net=host --gpus=all \
         --name ooo-worker-$INDEX \
         $DOCKER_IMAGE \

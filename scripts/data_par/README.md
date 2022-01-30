@@ -1,4 +1,4 @@
-# Data-Parallel Scripts
+# Prepared scripts for Data Parallel Experiments
 
 | script | number of nodes | number of GPUs | AWS instance |
 |:---:|:---:|:---:|:---:|

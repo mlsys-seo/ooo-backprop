@@ -24,4 +24,4 @@ export DEBUG_C_PRINT=0
 
 export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
 
-../../expr/data-parallel/scripts/single_node/run.sh preset
+../../expr/data_par/scripts/single_node/run.sh preset

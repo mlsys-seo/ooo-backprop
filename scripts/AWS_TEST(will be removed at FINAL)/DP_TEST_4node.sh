@@ -35,4 +35,4 @@ export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest
 export SSH_KEY_PATH="~/.ssh/hanyang_bdsl_oregon.pem"
 export SSH_ID="ubuntu"
 
-../../expr/data-parallel/scripts/multi_node/run.sh preset
+../../expr/data_par/scripts/multi_node/run.sh preset

@@ -30,4 +30,4 @@ export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_pipeline_parallel:la
 export SSH_KEY_PATH="~/.ssh/bdsl_rsa"
 export SSH_ID="cheezestick"
 
-../../expr/pipeline-parallel/scripts/run.sh preset
+../../expr/pipe_par/scripts/run.sh preset

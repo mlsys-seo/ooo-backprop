@@ -34,6 +34,7 @@ echo "S_W MICRO_BATCH_SIZE "$MICRO_BATCH_SIZE
 echo "S_W MODULO_BATCH_SIZE "$MODULO_BATCH_SIZE
 echo "S_W NUM_WORKER_PER_NODE "$NUM_WORKER_PER_NODE
 echo "S_W NUM_NODE "$NUM_NODE
+echo "S_W MASTER_HOST "$MASTER_HOST
 echo "S_W WORKER_HOST_STRING "$WORKER_HOST_STRING
 echo "S_W NODE_IDX "$NODE_IDX
 echo "S_W INPUT_DATA "$INPUT_DATA
@@ -42,7 +43,7 @@ echo "S_W MODEL_CONFIG_PATH "$MODEL_CONFIG_PATH
 echo "##########################################################"
 echo ""
 
-export grpc_master=
+export grpc_master=$MASTER_HOST
 
 if [[ "$TASK" == "pretrain" ]]
 then

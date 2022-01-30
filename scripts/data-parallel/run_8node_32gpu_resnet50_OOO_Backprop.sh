@@ -40,4 +40,4 @@ export SSH_KEY_PATH="SSH_KEY_PATH"
 export SSH_ID="ACCOUNT_ID"
 export DMLC_INTERFACE="NETWORK INTERFACE"
 
-../../expr/data-parallel/scripts/multi_node/run.sh preset
+../../expr/data_par/scripts/multi_node/run.sh preset

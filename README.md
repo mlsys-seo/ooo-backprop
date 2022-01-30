@@ -48,14 +48,12 @@ To setup an AWS instance for the experiments, one needs to take the follow steps
 
 #### EC2 Instance for each experiments
 
-- Single-GPU Training
->`p3.2xlarge`: 1 X 16G V100 GPUs, up to 10Gbps Ethernet
-
-- Pipeline-Parallel Training
-> `p3.16xlarge`: 8 X 16G V100 GPUs with NVLink, 25Gbps Ethernet
-
-- Data-Parallel Traning
-> `p3.8xlarge`: 4 X 16G V100 GPUs with NVLink, 10Gbps Ethernet
+1. Single-GPU Training
+  - `p3.2xlarge`: 1 X 16G V100 GPUs, up to 10Gbps Ethernet
+1. Pipeline-Parallel Training
+  - `p3.16xlarge`: 8 X 16G V100 GPUs with NVLink, 25Gbps Ethernet
+1. Data-Parallel Traning
+  - `p3.8xlarge`: 4 X 16G V100 GPUs with NVLink, 10Gbps Ethernet
 
 ### [Single-GPU Training](expr/single_gpu/README.md)
 

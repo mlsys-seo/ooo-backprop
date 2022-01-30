@@ -1,7 +1,8 @@
-```run_1node_4gpu_resnet50_BytePS.sh``` use one p3.8xlarge instance.
+# Data-Parallel Scripts
 
-```run_4node_4gpu_resnet50_BytePS.sh``` use two p3.8xlarge instances.
-
-```run_8node_4gpu_resnet50_BytePS.sh``` use three p3.8xlarge instances.
-
-```run_12node_4gpu_resnet50_BytePS.sh``` use four p3.8xlarge instances.
+| script | number of nodes | number of GPUs | AWS instance |
+|---|:---:|---:|---:|
+| ...1node... | 1 | 4 | `p3.8xlarge` |
+| ...4node... | 4 | 16 | `p3.8xlarge` |
+| ...8node... | 8 | 32 | `p3.8xlarge` |
+| ...12node... | 12 | 64 | `p3.8xlarge` |

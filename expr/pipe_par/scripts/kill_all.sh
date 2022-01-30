@@ -19,12 +19,12 @@ do
     then
         echo "::: KILL CONTAINER AT "$NODE_HOST" :::"
         ssh -i $SSH_KEY_PATH $SSH_ID@$NODE_HOST \
-            docker kill ooo-pipe-$node_idx
+            sudo docker kill ooo-pipe-$node_idx
     fi
 done
 
 echo "::: KILL CONTAINER AT "$MASTER_HOST" :::"
-docker kill ooo-pipe-0
+sudo docker kill ooo-pipe-0
 echo ""
 
 echo "==============================================================================="

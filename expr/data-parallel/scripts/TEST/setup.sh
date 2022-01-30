@@ -19,8 +19,8 @@ export NODE_HOSTS_STRING=${NODE_HOST_LIST[@]}
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 
 # set up cluster-setting
-export NUM_WORKER=16
-export NUM_SERVER=4
+export NUM_WORKER=8
+export NUM_SERVER=2
 
 export NUM_WORKER_PER_NODE=`expr $NUM_WORKER / $NUM_NODE`
 export NUM_SERVER_PER_NODE=`expr $NUM_SERVER / $NUM_NODE`

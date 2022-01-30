@@ -1,5 +1,6 @@
 # Prepared scripts for Data Parallel Experiments
 
+- Implemantation code is on [here](../../expr/data_par)
 - model: `ResNet-50` and `ResNet-101`
 - communication method: `NCCL` for intra-communication, `GRPC` for inter-communication
 - `..BytePS.sh`: baseline

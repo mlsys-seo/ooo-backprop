@@ -1,6 +1,6 @@
 # Prepared scripts for Data Parallel Experiments
 
-- Implemantation code is on [here](expr/pipe_par)
+- Implemantation code is on [here](../../expr/pipe_par)
 - model: BERT
 - communication method: `NCCL` for intra-communication, `GRPC` for inter-communication
 - `..gpipe.sh`: baseline

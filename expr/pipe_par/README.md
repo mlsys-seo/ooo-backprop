@@ -24,7 +24,7 @@
 ## 2. Expreriments 
 
 ```bash
-$ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
+$ git clone https://github.com/mlsys-seo/ooo-backprop.git
 $ cd OutOfOrder_Backprop/scripts/pipe_par/finetune
 $ # Edit MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
 $ ./run_1node_4gpu_finetune_gpipe.sh

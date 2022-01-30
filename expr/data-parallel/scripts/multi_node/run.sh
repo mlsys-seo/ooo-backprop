@@ -53,7 +53,7 @@ ssh -i $SSH_KEY_PATH -f $SSH_ID@$MASTER_HOST \
         --rm --privileged --ipc=host --net=host --gpus=all \
         --name ooo-scheduler \
         $DOCKER_IMAGE \
-        ./code/run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER &&
+        ./run_scheduler.sh $MASTER_HOST $MASTER_PORT $NUM_WORKER $NUM_SERVER &&
 
 DETACH=""
 for node_idx in "${!NODE_HOST_LIST[@]}"
@@ -74,7 +74,7 @@ do
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
                 --name ooo-worker-$INDEX \
                 $DOCKER_IMAGE \
-                ./code/run_node_resnet.sh \
+                ./run_node_resnet.sh \
                 $MODEL_SIZE $BATCH_SIZE $NUM_TRAINING_STEP $REVERSE_FIRST_K $MASTER_HOST $MASTER_PORT $NODE_HOST $NUM_WORKER $NUM_SERVER $NUM_SERVER_PER_NODE $INDEX $GPU_IDX $DEBUG_PRINT $DEBUG_C_PRINT" &&
         echo ""
         

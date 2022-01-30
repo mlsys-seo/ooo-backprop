@@ -34,9 +34,11 @@ OOO BackProp is evaluated with twelve neural network and five public datasets. C
 
 ## Quickstart
 
-### [Single-GPU Training](expr/single_gpu/README.md)
+### [about AWS setup](AWS-doc)
 
-### [Pipeline-Parallel Training](expr/pipe_par/README.md)
+### [Single-GPU Training](scripts/single_gpu/)
 
-### [Data-Parallel Training](expr/data_par/README.md)
+### [Pipeline-Parallel Training](scripts/pipe_par/)
+
+### [Data-Parallel Training](scripts/data_par/)
 

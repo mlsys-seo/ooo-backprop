@@ -18,10 +18,11 @@
     - All instances have to be in same `Security Group`
     - Open all TCP port inside `Security Group` for the worker communication
 
-## 2. Expreriments
+## 2. Run the Expreriments
 
 ```bash
 $ git clone https://github.com/mlsys-seo/ooo-backprop
 $ cd ooo-backprop/scripts/data_par
+$ # Edit MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
 $ ./run_1node_4gpu_resnet50_BytePS.sh
 ```

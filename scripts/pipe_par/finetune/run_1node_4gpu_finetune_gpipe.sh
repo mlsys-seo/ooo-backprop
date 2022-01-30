@@ -10,11 +10,11 @@ export PIPELINE_STYLE="gpipe" # modulo, fastforward,, fastforward-push, gpipe
 export TASK="finetune" # pretrain, finetune
 
 # set up cluster
-export MASTER_HOST=166.104.112.249
+export MASTER_HOST=localhost
 export MASTER_PORT=2232
 
 NODE_HOST_LIST=( )
-NODE_HOST_LIST[0]="$MASTER_HOST:$MASTER_PORT"
+NODE_HOST_LIST[0]=127.0.0.1
 
 export NODE_HOSTS_STRING=${NODE_HOST_LIST[@]}
 

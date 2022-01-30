@@ -10,11 +10,11 @@ export PIPELINE_STYLE="modulo" # modulo, fastforward,, fastforward-push, gpipe
 export TASK="finetune" # pretrain, finetune
 
 # set up cluster
-export MASTER_HOST=
+export MASTER_HOST=localhost
 export MASTER_PORT=2232
 
 NODE_HOST_LIST=( )
-NODE_HOST_LIST[0]="$MASTER_HOST:$MASTER_PORT"
+NODE_HOST_LIST[0]=127.0.0.1
 NODE_HOST_LIST[1]=
 NODE_HOST_LIST[2]=
 NODE_HOST_LIST[3]=
@@ -26,8 +26,8 @@ export NUM_NODE=${#NODE_HOST_LIST[@]}
 export NUM_WORKER_PER_NODE=1
 
 # set up network
-export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_pipeline_parallel:latest"
-export SSH_KEY_PATH="~/.ssh/bdsl_rsa"
-export SSH_ID="cheezestick"
+export DOCKER_IMAGE="mlsys.duckdns.org:9999/ooo_backprop_pipeline_parallel:latest"
+export SSH_KEY_PATH="~/.ssh/id_rsa"
+export SSH_ID="woals"
 
 ../../../expr/pipe_par/scripts/run.sh preset

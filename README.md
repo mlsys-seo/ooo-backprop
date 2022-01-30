@@ -34,7 +34,7 @@ OOO BackProp is evaluated with twelve neural network and five public datasets. C
 ![datap](https://user-images.githubusercontent.com/78071764/151532987-d56e3311-407d-406e-b389-ab811267eda9.png)
 
 
-## Quick Start
+## Quickstart
 
 ### AWS Configure
 We tested the artifact on three AWS instances (i.e., `p3.2xlarge`, `p3.8xlarge`, and `p3.16xlarge`), 

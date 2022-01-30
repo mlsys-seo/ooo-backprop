@@ -42,9 +42,9 @@ respectively for the single-GPU, data-parallel, and pipeline-parallel training e
 To setup an AWS instance for the experiments, one needs to take the follow steps.
 
 #### Common Setup
-- For multi-node experiments, you must set same `VPC`, `Subnet` and `Security Group`.
+- For multi-node experiments, you must set same `Security Group`.
 - `Security Group` must allows all TCP ports within itself.
-- We strongly recommend `Deep Learning AMI (Ubuntu 18.04) Version 56.0` ami which already contains everything for experiments(NVIDIA driver, docker, git, etc...)
+- For EC2 instanse, Use `Deep Learning AMI (Ubuntu 18.04) Version 56.0` image which already contains everything for experiments(NVIDIA driver, docker, git, etc...)
 
 #### EC2 Instance for each experiments
 

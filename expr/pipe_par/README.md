@@ -21,7 +21,7 @@
     - All instances have to be in same `Security Group`
     - Open all TCP port inside `Security Group` for the worker communication
 
-## 2. Expreriments 
+## 2. Run the expreriments 
 
 ```bash
 $ git clone https://github.com/mlsys-seo/ooo-backprop.git

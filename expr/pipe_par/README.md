@@ -6,10 +6,12 @@
 - Step 1: Choose an Amazon Machine Images(AMI)
     - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
 
+
 - Step 2: Choose an Instance Type
     - For 1 gpu / node: `p3.2xlarge` instance
     - For 4 gpus / node: `p3.8xlarge` instance
     - For 8 gpus / node: `p3.16xlarge` instance
+
 
 - Step 3: Configure Instance
     - All instances have to be in same `Security Group`

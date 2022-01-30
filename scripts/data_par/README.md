@@ -10,6 +10,7 @@
     - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
 
 - Step 2: Choose an Instance Type
+
 | script | number of nodes | number of GPUs | AWS instance |
 |:---:|:---:|:---:|:---:|
 | run_1node... | 1 | 4 | `p3.8xlarge` |

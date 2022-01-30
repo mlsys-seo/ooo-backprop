@@ -9,20 +9,12 @@ export NUM_TRAINING_STEP=50
 # set up cluster
 export MASTER_HOST=127.0.0.1
 export MASTER_PORT=1234
-
-NODE_HOST_LIST=( )
-NODE_HOST_LIST[0]="NODE IP"
-NODE_HOST_LIST[1]="NODE IP"
-NODE_HOST_LIST[2]="NODE IP"
-NODE_HOST_LIST[3]="NODE IP"
-
-export NODE_HOSTS_STRING=${NODE_HOST_LIST[@]}
-
-export NUM_NODE=${#NODE_HOST_LIST[@]}
+export NODE_HOST=127.0.0.1
+export NUM_NODE=1
 
 # set up cluster-setting
-export NUM_WORKER=16
-export NUM_SERVER=4
+export NUM_WORKER=4
+export NUM_SERVER=1
 
 export NUM_WORKER_PER_NODE=`expr $NUM_WORKER / $NUM_NODE`
 export NUM_SERVER_PER_NODE=`expr $NUM_SERVER / $NUM_NODE`
@@ -30,10 +22,6 @@ export NUM_SERVER_PER_NODE=`expr $NUM_SERVER / $NUM_NODE`
 export DEBUG_PRINT=0
 export DEBUG_C_PRINT=0
 
-# set up network
 export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
-export SSH_KEY_PATH="~/.ssh/hanyang_bdsl_oregon.pem"
-export SSH_ID="ubuntu"
-export DMLC_INTERFACE=ens3
 
-../../expr/data-parallel/scripts/multi_node/run.sh preset
+../../expr/data-parallel/scripts/single_node/run.sh preset

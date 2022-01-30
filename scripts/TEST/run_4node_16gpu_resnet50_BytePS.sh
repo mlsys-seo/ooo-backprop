@@ -7,30 +7,22 @@ export REVERSE_FIRST_K=45
 export NUM_TRAINING_STEP=50
 
 # set up cluster
-export MASTER_HOST=127.0.0.1
+export MASTER_HOST=172.31.2.164
 export MASTER_PORT=1234
 
 NODE_HOST_LIST=( )
-NODE_HOST_LIST[0]="NODE IP"
-NODE_HOST_LIST[1]="NODE IP"
-NODE_HOST_LIST[2]="NODE IP"
-NODE_HOST_LIST[3]="NODE IP"
-NODE_HOST_LIST[4]="NODE IP"
-NODE_HOST_LIST[5]="NODE IP"
-NODE_HOST_LIST[6]="NODE IP"
-NODE_HOST_LIST[7]="NODE IP"
-NODE_HOST_LIST[8]="NODE IP"
-NODE_HOST_LIST[9]="NODE IP"
-NODE_HOST_LIST[10]="NODE IP"
-NODE_HOST_LIST[11]="NODE IP"
+NODE_HOST_LIST[0]=172.31.2.164
+NODE_HOST_LIST[1]=172.31.2.212
+NODE_HOST_LIST[2]=172.31.2.125
+NODE_HOST_LIST[3]=172.31.2.232
 
 export NODE_HOSTS_STRING=${NODE_HOST_LIST[@]}
 
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 
 # set up cluster-setting
-export NUM_WORKER=48
-export NUM_SERVER=12
+export NUM_WORKER=16
+export NUM_SERVER=4
 
 export NUM_WORKER_PER_NODE=`expr $NUM_WORKER / $NUM_NODE`
 export NUM_SERVER_PER_NODE=`expr $NUM_SERVER / $NUM_NODE`
@@ -42,6 +34,5 @@ export DEBUG_C_PRINT=0
 export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
 export SSH_KEY_PATH="~/.ssh/hanyang_bdsl_oregon.pem"
 export SSH_ID="ubuntu"
-export DMLC_INTERFACE=ens3
 
 ../../expr/data-parallel/scripts/multi_node/run.sh preset

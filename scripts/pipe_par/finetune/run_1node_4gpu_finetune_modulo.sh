@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # set up Model
-export MODEL="bert_24" # bert_12, bert_24, bert_36, bert_48
+export MODEL="bert_24"
 export GLOBAL_BATCH_SIZE=96
 export MICRO_BATCH_SIZE=4
 export MODULO_BATCH_SIZE=1
 export NUM_TRAINING_STEP=30
-export PIPELINE_STYLE="modulo" # modulo, fastforward,, fastforward-push, gpipe
-export TASK="finetune" # pretrain, finetune
+export PIPELINE_STYLE="modulo"
+export TASK="finetune"
 
 # set up cluster
 export MASTER_HOST=localhost

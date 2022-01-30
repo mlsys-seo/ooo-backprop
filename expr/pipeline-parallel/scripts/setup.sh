@@ -14,7 +14,7 @@ export MASTER_HOST=172.0.0.1
 export MASTER_PORT=1234
 
 export NODE_HOST_LIST=( )
-NODE_HOST_LIST[0]=localhost
+NODE_HOST_LIST[0]=172.0.0.1
 
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 

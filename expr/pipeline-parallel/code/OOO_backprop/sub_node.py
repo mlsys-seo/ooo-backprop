@@ -17,7 +17,7 @@ def main(_):
 
     server = tf.distribute.Server(cluster, job_name='worker', task_index=FLAGS.task_index, config=config)
     print( "task index ", FLAGS.task_index )
-    print( "going sleep..." )
+    print( "waiting for master node..." )
     server.join()
 
 

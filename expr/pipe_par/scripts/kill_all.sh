@@ -23,7 +23,7 @@ do
     fi
 done
 
-echo "::: PULL IMAGE AT "$MASTER_HOST" :::"
+echo "::: KILL CONTAINER AT "$MASTER_HOST" :::"
 docker kill ooo-pipe-0
 echo ""
 

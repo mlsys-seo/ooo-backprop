@@ -21,6 +21,6 @@ STep 3: Configure security Group
 
 ```bash
 $ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
-$ cd scripts/data-parallel
+$ cd scripts/data_par
 $ ./run_1node_4gpu_resnet50_BytePS.sh
 ```

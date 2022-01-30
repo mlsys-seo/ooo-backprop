@@ -3,7 +3,7 @@
 # set up Model
 export MODEL_SIZE=50
 export BATCH_SIZE=128
-export REVERSE_FIRST_K=30
+export REVERSE_FIRST_K=45
 export NUM_TRAINING_STEP=50
 
 # set up cluster

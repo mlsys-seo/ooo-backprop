@@ -82,8 +82,8 @@ do
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
                 --name ooo-pipe-$NODE_IDX \
                 $DOCKER_IMAGE \
-                ./code/run_node.sh \
-                $TASK $MODEL $PIPELINE_STYLE $NUM_TRAINING_STEP $GLOBAL_BATCH_SIZE $MICRO_BATCH_SIZE $MODULO_BATCH_SIZE $NUM_WORKER_PER_NODE $NUM_NODE $MASTER_HOST $WORKER_HOST_STRING $NODE_IDX" &
+                ./code/run_subnode.sh \
+                $NODE_IDX $WORKER_HOST_STRING" &
         echo ""
     fi
 done

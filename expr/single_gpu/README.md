@@ -1,15 +1,24 @@
 # Implementation OOO on Single-GPU
 
-여기는 코드 구현 관련을 쓰는게 좋을듯
+## 1. Environment Setup
 
-## 1. Setup
-1. Launch 1 ~ 12 AWS p3.8xlarge instances
-1. Copy the downloaded images to the AWS instances
-1. Run the following commands in all the instances
+### On-Promise Setup
+- Prerequisites: nvidia driver, docker, git
 
-## 2. Run on AWS
-- Environment setting
-  - Amazon AWS p3.8xlarge
+### AWS Setup
+
+- Step 1: Choose an Amazon Machine Images(AMI)
+    - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
+
+
+- Step 2: Choose an Instance Type
+    - For 1 gpu / node: `p3.2xlarge` instance
+
+- Step 3: Configure Instance
+    - All instances have to be in same `Security Group`
+    - Open all TCP port inside `Security Group` for the worker communication
+
+## 2. Expriments
 
 
 ```bash

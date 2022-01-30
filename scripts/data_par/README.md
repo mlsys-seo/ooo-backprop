@@ -10,7 +10,7 @@
 - `Security Group` must allows all TCP ports within itself.
 - For EC2 instanse, Use `Deep Learning AMI (Ubuntu 18.04) Version 56.0` image which already contains everything for experiments(NVIDIA driver, docker, git, etc...)
 
-## Expriments
+## Expreiments
 
 | script | number of nodes | number of GPUs | AWS instance |
 |:---:|:---:|:---:|:---:|

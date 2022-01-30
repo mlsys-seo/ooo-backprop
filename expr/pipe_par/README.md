@@ -21,6 +21,6 @@ STep 3: Configure security Group
 
 ```bash
 $ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
-$ cd scripts/pipe_par/~~
-$ ./예제하나 넣어줘염
+$ cd scripts/pipe_par/finetune
+$ ./run_1node_4gpu_finetune_modulo.sh
 ```

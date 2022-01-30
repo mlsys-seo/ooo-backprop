@@ -12,24 +12,26 @@ echo ""
 echo ""
 echo "=============================== Kill Containers ==============================="
 
-echo "::: KILL SCHEDULER CONTAINER :::"
-ssh -i $SSH_KEY_PATH $SSH_ID@$MASTER_HOST \
-    sudo docker kill ooo-scheduler
-
 for node_idx in "${!NODE_HOST_LIST[@]}"
 do
     NODE_HOST="${NODE_HOST_LIST[$node_idx]}"
-    echo "::: KILL CONTAINER AT "$NODE_HOST" :::"
+    if [[ "$NODE_HOST" != "$MASTER_HOST" ]]
+    then
+        echo "::: KILL CONTAINER AT "$NODE_HOST" :::"
+        for ((local_idx = 0 ; local_idx < $NUM_WORKER_PER_NODE ; local_idx++))
+        do
+            PRE_INDEX=`expr $node_idx \* $NUM_WORKER_PER_NODE`
+            INDEX=`expr $PRE_INDEX + $local_idx`
 
-    for ((local_idx = 0 ; local_idx < $NUM_WORKER_PER_NODE ; local_idx++))
-    do
-        PRE_INDEX=`expr $node_idx \* $NUM_WORKER_PER_NODE`
-        INDEX=`expr $PRE_INDEX + $local_idx`
-
-        ssh -i $SSH_KEY_PATH $SSH_ID@$NODE_HOST \
-            sudo docker kill ooo-pipe-$INDEX
-    done
+            ssh -i $SSH_KEY_PATH $SSH_ID@$NODE_HOST \
+                docker kill ooo-pipe-$INDEX
+        done
+    fi
 done
+
+echo "::: PULL IMAGE AT "$MASTER_HOST" :::"
+docker kill ooo-pipe-0
+echo ""
 
 echo "==============================================================================="
 echo ""

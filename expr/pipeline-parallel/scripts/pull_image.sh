@@ -20,13 +20,13 @@ do
         echo "::: PULL IMAGE AT "$NODE_HOST" :::"
 
         ssh -i $SSH_KEY_PATH -o "StrictHostKeyChecking no" $SSH_ID@$NODE_HOST \
-            "sudo docker pull $DOCKER_IMAGE" &
+            "docker pull $DOCKER_IMAGE" &
         echo ""
     fi
 done
 
 echo "::: PULL IMAGE AT "$MASTER_HOST" :::"
-sudo docker pull $DOCKER_IMAGE
+docker pull $DOCKER_IMAGE
 echo ""
 
 echo "==============================================================================="

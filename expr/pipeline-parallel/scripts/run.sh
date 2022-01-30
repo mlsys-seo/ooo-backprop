@@ -1,5 +1,8 @@
+#!/bin/bash
+
 export REMOTE_ARG=$1
-SCRIPT_ROOT_PATH=$(dirname $0)
+CODE_ROOT_PATH=$(dirname $(dirname $(realpath $0)))
+echo $CODE_ROOT_PATH
 
 if [[ $REMOTE_ARG == "preset" ]]
 then
@@ -8,8 +11,8 @@ else
     source $SCRIPT_ROOT_PATH/setup.sh
 fi
 
-DATA_DIR="../code/data"
-CONFIG_DIR="../code/bert_config"
+DATA_DIR="$CODE_ROOT_PATH/code/data"
+CONFIG_DIR="$CODE_ROOT_PATH/code/bert_config"
 
 echo ""
 echo "==================================== setup ===================================="
@@ -32,7 +35,6 @@ echo ""
 echo "NETWORK CONFIGURE  :: DOCKER_IMAGE: "$DOCKER_IMAGE
 echo "NETWORK CONFIGURE  :: SSH_KEY_PATH: "$SSH_KEY_PATH
 echo "NETWORK CONFIGURE  :: SSH_ID: "$SSH_ID
-echo "NETWORK CONFIGURE  :: DMLC_INTERFACE: "$DMLC_INTERFACE
 echo "==============================================================================="
 echo ""
 
@@ -48,10 +50,10 @@ WORKER_HOST_STRING="${WORKER_HOST_STRING:(0):(-1)}"
 MODEL_CONFIG_PATH=$CONFIG_DIR/$MODEL.json
 
 # pull docker images
-$SCRIPT_ROOT_PATH/pull_image.sh
+$CODE_ROOT_PATH/scripts/pull_image.sh
 
 # kill existing containers before running containers
-$SCRIPT_ROOT_PATH/kill_all.sh &&
+$CODE_ROOT_PATH/scripts/kill_all.sh &&
 
 # run scripts
 echo ""
@@ -63,37 +65,25 @@ do
     NODE_HOST="${NODE_HOST_LIST[$NODE_IDX]}"
     if [ $NODE_IDX == 0 ]
     then
-      echo "::: RUN SERVER NODE "$NODE_IDX": "$NODE_HOST" :::"
-        python /workspace/OutOfOrder_Backprop/src/run_classifier.py \
-            --task_name=MRPC \
-            --data_dir=${DATA_DIR} \
-            --vocab_file=${DATA_DIR}/vocab.txt \
-            --do_train=true \
-            --max_seq_length=128 \
-            --learning_rate=2e-5 \
-            --output_dir=/outputs/ \
-            --num_train_steps=${NUM_TRAINING_STEP} \
-            --train_batch_size=${GLOBAL_BATCH_SIZE} \
-            --micro_batch_size=${MICRO_BATCH_SIZE} \
-            --modulo_batch=${MODULO_BATCH_SIZE}
-            --bert_config_file=${MODEL_CONFIG_PATH} \
-            --gpu_size=${NUM_WORKER_PER_NODE} \
-            --cluster_size=${NUM_NODE} \
-            --task_index=${NODE_IDX} \
-            --worker_hosts=${WORKER_HOST_STRING} \
-            --pipeline_style=${PIPELINE_STYLE}
-        echo ""
-    else
-      echo "::: RUN REMOTE WORKER NODE "$NODE_IDX": "$NODE_HOST" :::"
-        ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
-            "sudo docker run $DETACH \
+      echo "::: RUN MASTER NODE "$NODE_IDX": "$NODE_HOST" :::"
+        docker run $DETACH \
                 --rm --privileged --ipc=host --net=host --gpus=all \
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
                 --name ooo-pipe-$NODE_IDX \
                 $DOCKER_IMAGE \
-                ./code/OOO_backprop/sub_node.py \
-                --task_index=${NODE_IDX} \
-                --worker_hosts=$WORKER_HOST_STRING" &
+                ./code/run_node.sh \
+                $TASK $MODEL $PIPELINE_STYLE $NUM_TRAINING_STEP $GLOBAL_BATCH_SIZE $MICRO_BATCH_SIZE $MODULO_BATCH_SIZE $NUM_WORKER_PER_NODE $NUM_NODE $MASTER_HOST $WORKER_HOST_STRING $NODE_IDX &
+        echo ""
+    else
+      echo "::: RUN REMOTE WORKER NODE "$NODE_IDX": "$NODE_HOST" :::"
+        ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
+            "docker run $DETACH \
+                --rm --privileged --ipc=host --net=host --gpus=all \
+                -e DMLC_INTERFACE=$DMLC_INTERFACE \
+                --name ooo-pipe-$NODE_IDX \
+                $DOCKER_IMAGE \
+                ./code/run_node.sh \
+                $TASK $MODEL $PIPELINE_STYLE $NUM_TRAINING_STEP $GLOBAL_BATCH_SIZE $MICRO_BATCH_SIZE $MODULO_BATCH_SIZE $NUM_WORKER_PER_NODE $NUM_NODE $MASTER_HOST $WORKER_HOST_STRING $NODE_IDX" &
         echo ""
     fi
 done

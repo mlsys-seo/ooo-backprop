@@ -47,9 +47,17 @@ done
 WORKER_HOST_STRING="${WORKER_HOST_STRING:(0):(-1)}"
 MODEL_CONFIG_PATH=$CONFIG_DIR/$MODEL.json
 
+# pull docker images
+$SCRIPT_ROOT_PATH/pull_image.sh
+
+# kill existing containers before running containers
+$SCRIPT_ROOT_PATH/kill_all.sh &&
 
 # run scripts
-
+echo ""
+echo ""
+echo "============================= RUNNING CONTAINERS =============================="
+echo ""
 for NODE_IDX in "${!NODE_HOST_LIST[@]}"
 do
     NODE_HOST="${NODE_HOST_LIST[$NODE_IDX]}"
@@ -81,7 +89,7 @@ do
             "sudo docker run $DETACH \
                 --rm --privileged --ipc=host --net=host --gpus=all \
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
-                --name ooo-worker-$NODE_IDX \
+                --name ooo-pipe-$NODE_IDX \
                 $DOCKER_IMAGE \
                 ./code/OOO_backprop/sub_node.py \
                 --task_index=${NODE_IDX} \
@@ -89,3 +97,5 @@ do
         echo ""
     fi
 done
+echo ""
+echo "=================================== RUN DONE =================================="

@@ -80,7 +80,7 @@ do
             "sudo docker run $DETACH \
                 --rm --privileged --ipc=host --net=host --gpus=all \
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
-                --name ooo-worker-$NODE_IDX \
+                --name ooo-pipe-$NODE_IDX \
                 $DOCKER_IMAGE \
                 ./code/OOO_backprop/sub_node.py \
                 --task_index=${NODE_IDX} \

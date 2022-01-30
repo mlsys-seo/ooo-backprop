@@ -1,7 +1,7 @@
 # Prepared scripts for Data Parallel Experiments
 
-- `model`: BERT
-- `communication method`: `NCCL` for intra-communication, `GRPC` for inter-communication
+- model: BERT
+- communication method: `NCCL` for intra-communication, `GRPC` for inter-communication
 - `..gpipe.sh`: baseline
 - `..modulo.sh`: OOO-Backprop
 

@@ -1,20 +1,20 @@
 #!/bin/bash
 
 # set up Model
-export MODEL="bert_24" # bert_12, bert_24, bert_36, bert_48
-export GLOBAL_BATCH_SIZE=96
-export MICRO_BATCH_SIZE=8
-export MODULO_BATCH_SIZE=2
+export MODEL="bert_12"
+export GLOBAL_BATCH_SIZE=480
+export MICRO_BATCH_SIZE=40
+export MODULO_BATCH_SIZE=1
 export NUM_TRAINING_STEP=50
-export PIPELINE_STYLE="modulo" # modulo, fastforward,, fastforward-push, gpipe
-export TASK="finetune" # pretrain, finetune
+export PIPELINE_STYLE="fastforward_push"
+export TASK="pretrain"
 
 # set up cluster
-export MASTER_HOST=172.0.0.1
-export MASTER_PORT=1234
+export MASTER_HOST=
+export MASTER_PORT=2232
 
 NODE_HOST_LIST=( )
-NODE_HOST_LIST[0]=172.0.0.1
+NODE_HOST_LIST[0]=
 
 export NODE_HOSTS_STRING=${NODE_HOST_LIST[@]}
 
@@ -27,7 +27,7 @@ export DEBUG_C_PRINT=0
 
 # set up network
 export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_pipeline_parallel:latest"
-export SSH_KEY_PATH="~/.ssh/bdsl_rsa"
-export SSH_ID="cheezestick"
+export SSH_KEY_PATH="~/.ssh/hanyang_bdsl_oregon.pem"
+export SSH_ID="ubuntu"
 
 ../../../expr/pipe_par/scripts/run.sh preset

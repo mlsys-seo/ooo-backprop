@@ -1,15 +1,26 @@
-# Implementation OOO of Pipeline Parallel
-
+# Implementation OOO of Pieline-Parallel
 ## 1. Setup
-1. Launch 1 ~ 12 AWS p3.8xlarge instances
-1. Copy the downloaded images to the AWS instances
-1. Run the following commands in all the instances
 
-## 2. Run on AWS
-- Environment setting
-  - Amazon AWS p3.8xlarge
+### AWS instance
+```
+Step 1: Choose an Amazon Machine Images(AMI)
+  Deep Learning AMI (Ubuntu 18.04) Version 56.0 
+```
 
+```
+Step 2: Choose an Instance Type 
+  1 ~ 4 p3.16xlarge Instance
+```
+
+```
+STep 3: Configure security Group
+  Open all TCPport for all instances for the worker communication
+```
+
+## 2. Expreriments 
 
 ```bash
-$ ./scripts/remote/run.sh
+$ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
+$ cd scripts/pipe_par/~~
+$ ./예제하나 넣어줘염
 ```

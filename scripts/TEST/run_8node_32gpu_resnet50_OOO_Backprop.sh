@@ -35,7 +35,7 @@ export DEBUG_PRINT=0
 export DEBUG_C_PRINT=0
 
 # set up network
-export DOCKER_IMAGE="195164261969.dkr.ecr.us-west-2.amazonaws.com/ooo_backprop_data_parallel:latest"
+export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
 export SSH_KEY_PATH="~/.ssh/hanyang_bdsl_oregon.pem"
 export SSH_ID="ubuntu"
 export DMLC_INTERFACE=ens3

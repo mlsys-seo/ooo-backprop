@@ -28,7 +28,7 @@ export NUM_SERVER_PER_NODE=`expr $NUM_SERVER / $NUM_NODE`
 export DEBUG_PRINT=1
 export DEBUG_C_PRINT=1
 
-export DOCKER_IMAGE="mlsys.duckdns.org:9999/ooo_backprop_data_parallel:latest"
+export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
 export SSH_KEY_PATH="SSH_KEY_PATH"
 export SSH_ID="ACCOUNT_ID"
 export DMLC_INTERFACE="NETWORK INTERFACE"

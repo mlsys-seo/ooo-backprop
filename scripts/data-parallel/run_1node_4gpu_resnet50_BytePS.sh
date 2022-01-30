@@ -22,6 +22,6 @@ export NUM_SERVER_PER_NODE=`expr $NUM_SERVER / $NUM_NODE`
 export DEBUG_PRINT=0
 export DEBUG_C_PRINT=0
 
-export DOCKER_IMAGE="mlsys.duckdns.org:9999/ooo_backprop_data_parallel:latest"
+export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
 
 ../../expr/data-parallel/scripts/single_node/run.sh preset

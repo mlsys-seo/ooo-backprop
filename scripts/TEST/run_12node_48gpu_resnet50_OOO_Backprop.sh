@@ -3,7 +3,7 @@
 # set up Model
 export MODEL_SIZE=50
 export BATCH_SIZE=128
-export REVERSE_FIRST_K=0
+export REVERSE_FIRST_K=45
 export NUM_TRAINING_STEP=50
 
 # set up cluster
@@ -40,8 +40,8 @@ export DEBUG_C_PRINT=0
 
 # set up network
 export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
-export SSH_KEY_PATH="SSH_KEY_PATH"
-export SSH_ID="ACCOUNT_ID"
-export DMLC_INTERFACE="NETWORK INTERFACE"
+export SSH_KEY_PATH="~/.ssh/hanyang_bdsl_oregon.pem"
+export SSH_ID="ubuntu"
+export DMLC_INTERFACE=ens3
 
 ../../expr/data-parallel/scripts/multi_node/run.sh preset

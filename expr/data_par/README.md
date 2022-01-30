@@ -20,7 +20,7 @@ STep 3: Configure security Group
 ## 2. Expreriments
 
 ```bash
-$ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
+$ git clone https://github.com/mlsys-seo/ooo-backprop
 $ cd scripts/data_par
 $ ./run_1node_4gpu_resnet50_BytePS.sh
 ```

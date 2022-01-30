@@ -14,7 +14,7 @@ Step 2: Choose an Instance Type
 
 ```
 STep 3: Configure security Group
-  Open TCPport 1234 for all instances for the worker communication
+  Open all TCPport for all instances for the worker communication
 ```
 
 ## 2. Expreriments
@@ -22,5 +22,5 @@ STep 3: Configure security Group
 ```bash
 $ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
 $ cd scripts/data-parallel
-$ ./run_gpu4_resnet50.sh
+$ ./run_1node_4gpu_resnet50_BytePS.sh
 ```

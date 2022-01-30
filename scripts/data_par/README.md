@@ -1,7 +1,7 @@
 # Prepared scripts for Data Parallel Experiments
 
-- `model`: `ResNet-50` and `ResNet-101`
-- `communication method`: `NCCL` for intra-communication, `GRPC` for inter-communication
+- model: `ResNet-50` and `ResNet-101`
+- communication method: `NCCL` for intra-communication, `GRPC` for inter-communication
 - `..BytePS.sh`: baseline
 - `..OOO-Backprop.sh`: OOO-Backprop
 

@@ -18,7 +18,7 @@ do
     echo "::: PULL IMAGE AT "$NODE_HOST" :::"
 
     ssh -i $SSH_KEY_PATH $SSH_ID@$NODE_HOST \
-        docker pull $DOCKER_IMAGE &
+        sudo docker pull $DOCKER_IMAGE &
 done
 echo "==============================================================================="
 echo ""

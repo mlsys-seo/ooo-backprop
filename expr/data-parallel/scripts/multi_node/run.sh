@@ -49,7 +49,7 @@ echo "==========================================================================
 echo "::: RUN REMOTE SCHEDULER "$MASTER_HOST":"$MASTER_PORT" :::"
 
 ssh -i $SSH_KEY_PATH -f $SSH_ID@$MASTER_HOST \
-    docker run -d \
+    sudo docker run -d \
         --rm --privileged --ipc=host --net=host --gpus=all \
         --name ooo-scheduler \
         $DOCKER_IMAGE \
@@ -69,7 +69,7 @@ do
         echo ""
         echo "::: RUN REMOTE NODE "$node_idx": "$NODE_HOST" | IDX "$INDEX" | GPU_IDX: "$GPU_IDX" :::"
         ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
-            "docker run $DETACH \
+            "sudo docker run $DETACH \
                 --rm --privileged --ipc=host --net=host --gpus=all \
                 -e DMLC_INTERFACE=$DMLC_INTERFACE \
                 --name ooo-worker-$INDEX \

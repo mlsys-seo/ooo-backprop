@@ -14,7 +14,7 @@ echo "=============================== Kill Containers ==========================
 
 echo "::: KILL SCHEDULER CONTAINER :::"
 ssh -i $SSH_KEY_PATH $SSH_ID@$MASTER_HOST \
-    docker kill ooo-scheduler
+    sudo docker kill ooo-scheduler
 
 for node_idx in "${!NODE_HOST_LIST[@]}"
 do
@@ -27,7 +27,7 @@ do
         INDEX=`expr $PRE_INDEX + $local_idx`
 
         ssh -i $SSH_KEY_PATH $SSH_ID@$NODE_HOST \
-            docker kill ooo-worker-$INDEX
+            sudo docker kill ooo-worker-$INDEX
     done
 done
 

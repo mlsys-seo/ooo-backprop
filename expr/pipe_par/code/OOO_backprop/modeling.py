@@ -31,10 +31,6 @@ import tensorflow as tf2
 flags = tf.flags
 FLAGS = flags.FLAGS
 
-# GPU Number Schedule
-# device_manager
-gpu_seq = [0, 3, 2, 1, 5, 6, 7, 4]
-
 class BertConfig(object):
   """Configuration for `BertModel`."""
 

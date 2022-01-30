@@ -17,8 +17,9 @@ do
     NODE_HOST="${NODE_HOST_LIST[$node_idx]}"
     echo "::: PULL IMAGE AT "$NODE_HOST" :::"
 
-    ssh -i $SSH_KEY_PATH $SSH_ID@$NODE_HOST \
-        sudo docker pull $DOCKER_IMAGE &
+    ssh -i $SSH_KEY_PATH -o "StrictHostKeyChecking no" $SSH_ID@$NODE_HOST \
+        "sudo docker pull $DOCKER_IMAGE" &&
+    echo ""
 done
 echo "==============================================================================="
 echo ""

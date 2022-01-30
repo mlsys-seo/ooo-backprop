@@ -45,7 +45,8 @@ $SCRIPT_ROOT_PATH/kill_all.sh &&
 
 echo ""
 echo ""
-echo "==============================================================================="
+echo "============================= RUNNING CONTAINERS =============================="
+echo ""
 echo "::: RUN REMOTE SCHEDULER "$MASTER_HOST":"$MASTER_PORT" :::"
 
 ssh -i $SSH_KEY_PATH -f $SSH_ID@$MASTER_HOST \
@@ -59,14 +60,15 @@ DETACH=""
 for node_idx in "${!NODE_HOST_LIST[@]}"
 do
     NODE_HOST="${NODE_HOST_LIST[$node_idx]}"
-
+    echo ""
+    echo "- - - - - - - - - - - - - - - - - - - - - - - - -"
+    echo ""
     for ((local_idx = 0 ; local_idx < $NUM_WORKER_PER_NODE ; local_idx++))
     do
         PRE_INDEX=`expr $node_idx \* $NUM_WORKER_PER_NODE`
         INDEX=`expr $PRE_INDEX + $local_idx`
         GPU_IDX=$local_idx
 
-        echo ""
         echo "::: RUN REMOTE NODE "$node_idx": "$NODE_HOST" | IDX "$INDEX" | GPU_IDX: "$GPU_IDX" :::"
         ssh -i $SSH_KEY_PATH -f $SSH_ID@$NODE_HOST \
             "sudo docker run $DETACH \
@@ -76,7 +78,6 @@ do
                 $DOCKER_IMAGE \
                 ./run_node_resnet.sh \
                 $MODEL_SIZE $BATCH_SIZE $NUM_TRAINING_STEP $REVERSE_FIRST_K $MASTER_HOST $MASTER_PORT $NODE_HOST $NUM_WORKER $NUM_SERVER $NUM_SERVER_PER_NODE $INDEX $GPU_IDX $DEBUG_PRINT $DEBUG_C_PRINT" &&
-        echo ""
         
         if [[ $DETACH == "" ]]
         then
@@ -84,4 +85,5 @@ do
         fi
     done
 done
+echo ""
 echo "=================================== RUN DONE =================================="

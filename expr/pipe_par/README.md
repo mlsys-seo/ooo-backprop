@@ -22,6 +22,6 @@ STep 3: Configure security Group
 ```bash
 $ git clone https://github.com/mlsys-seo/OutOfOrder_Backprop.git
 $ cd OutOfOrder_Backprop/scripts/pipe_par/finetune
-$ #Update Master_Host, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
+$ # Edit MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
 $ ./run_1node_4gpu_finetune_gpipe.sh
 ```

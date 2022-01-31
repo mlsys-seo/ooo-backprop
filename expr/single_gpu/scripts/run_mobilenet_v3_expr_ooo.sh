@@ -15,7 +15,7 @@ echo "  Batch size : ${BATCH}"
 echo "  Growth K : ${ALPHA}"
 echo "##########################################################"
 
-python ../code/mobilenet_v3_expr_ooo.py ${BATCH} ${ALPHA}
+python /workspace/expr/code/mobilenet_v3_expr_ooo.py ${BATCH} ${ALPHA}
 
 unset TF_XLA_FLAGS
 unset DO_OOO_BACKPROP

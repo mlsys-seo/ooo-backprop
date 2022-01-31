@@ -15,7 +15,7 @@ echo "  Batch size : ${BATCH}"
 echo "  Growth K : ${GROWTH_K}"
 echo "##########################################################"
 
-python ../code/densenet_expr_ooo.py ${BATCH} ${GROWTH_K}
+python /workspace/expr/code/densenet_expr_ooo.py ${BATCH} ${GROWTH_K}
 
 unset TF_XLA_FLAGS
 unset DO_OOO_BACKPROP

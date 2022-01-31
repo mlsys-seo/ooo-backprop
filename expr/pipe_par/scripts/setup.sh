@@ -9,7 +9,7 @@ export NUM_TRAINING_STEP=50
 export PIPELINE_STYLE="modulo" # modulo, fastforward,, fastforward-push, gpipe
 export TASK="finetune" # pretrain, finetune
 
-# set up cluster
+# set up cluster (assign IP of MASTER_HOST)
 export MASTER_HOST=172.0.0.1
 export MASTER_PORT=1234
 

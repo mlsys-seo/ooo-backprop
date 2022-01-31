@@ -6,7 +6,7 @@ export BATCH_SIZE=128
 export REVERSE_FIRST_K=30
 export NUM_TRAINING_STEP=50
 
-# set up cluster
+# set up cluster (assign IP of MASTER_HOST)
 export MASTER_HOST=127.0.0.1
 export MASTER_PORT=1234
 
@@ -18,7 +18,7 @@ NODE_HOST_LIST[0]=127.0.0.1
 
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 
-# set up cluster-setting
+# set up cluster (assign IP of MASTER_HOST)-setting
 export NUM_WORKER=4
 export NUM_SERVER=1
 

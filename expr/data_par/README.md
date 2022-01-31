@@ -26,4 +26,4 @@ $ cd ooo-backprop/scripts/data_par
 $ # Edit the following script for MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
 $ ./run_1node_4gpu_resnet50_BytePS.sh
 ```
-Note that you need to run the script only in the master node (MASTER_HOST which should be NODE_HOST_LIST[0]).
+Note that you need to git-clone the repository and run the script only in the master node (MASTER_HOST which should be NODE_HOST_LIST[0]).

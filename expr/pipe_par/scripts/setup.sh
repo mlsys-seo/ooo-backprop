@@ -13,6 +13,7 @@ export TASK="finetune" # pretrain, finetune
 export MASTER_HOST=172.0.0.1
 export MASTER_PORT=1234
 
+# NODE_HOST_LIST[0] should be the IP of MASTER_HOST
 export NODE_HOST_LIST=( )
 NODE_HOST_LIST[0]=172.0.0.1
 

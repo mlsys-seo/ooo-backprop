@@ -1,4 +1,4 @@
-# Implementation OOO of Pieline-Parallel
+# Implementation OOO of Pipeline-Parallel
 
 ## 1. Environment Setup
 

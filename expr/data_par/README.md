@@ -23,6 +23,6 @@
 ```bash
 $ git clone https://github.com/mlsys-seo/ooo-backprop
 $ cd ooo-backprop/scripts/data_par
-$ # Edit MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
+$ # Edit the following script for MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
 $ ./run_1node_4gpu_resnet50_BytePS.sh
 ```

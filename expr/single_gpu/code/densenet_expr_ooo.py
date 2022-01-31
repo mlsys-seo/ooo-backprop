@@ -208,8 +208,8 @@ def main():
             sess.run([cuda_graph_run_op], feed_dict={X: dummy_X, Y: dummy_Y})
             end_time = time.time()
 
-            train_time = end_time - start_time
-            cuda_graph_oneiter_times.append(train_time)
+            oneiter_time = end_time - start_time
+            cuda_graph_oneiter_times.append(oneiter_time)
 
         # The execution time of the first few iteration is high because of TF graph initialization and GPU initialization overhead.
         # So it disturbs to measure the average execution time.

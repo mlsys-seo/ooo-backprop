@@ -182,7 +182,7 @@ def main():
         sess.run(tf.compat.v1.global_variables_initializer())
 
         ################################################
-        # Preparing and running CUDA Graph capture.
+        # Running MobileNet v3 with Tensorflow XLA  
         ################################################
         warmup_step = 3
         tf_graph_step = 50 + warmup_step

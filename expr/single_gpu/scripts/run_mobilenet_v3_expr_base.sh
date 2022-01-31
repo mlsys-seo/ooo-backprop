@@ -3,14 +3,14 @@
 export TF_XLA_FLAGS=--tf_xla_auto_jit=2
 
 BATCH=$1
-GROWTH_K=$2
+ALPHA=$2
 
 echo "##########################################################"
-echo "  Single GPU Experiment - DenseNet121 with Tensorflow XLA"
+echo "  Single GPU Experiment - MobileNet v3 with Tensorflow XLA"
 echo "  Batch size : ${BATCH}"
-echo "  Growth K : ${GROWTH_K}"
+echo "  Growth K : ${ALPHA}"
 echo "##########################################################"
 
-python ../code/densenet_expr_base.py ${BATCH} ${GROWTH_K}
+python ../code/mobilenet_v3_expr_base.py ${BATCH} ${ALPHA}
 
 unset TF_XLA_FLAGS

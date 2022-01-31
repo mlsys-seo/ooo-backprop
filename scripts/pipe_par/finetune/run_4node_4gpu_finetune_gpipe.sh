@@ -9,10 +9,11 @@ export NUM_TRAINING_STEP=30
 export PIPELINE_STYLE="gpipe"
 export TASK="finetune"
 
-# set up cluster
+# set up cluster (assign IP of MASTER_HOST)
 export MASTER_HOST=localhost
 export MASTER_PORT=2232
 
+# NODE_HOST_LIST[0] should be the IP of MASTER_HOST
 NODE_HOST_LIST=( )
 NODE_HOST_LIST[0]=
 NODE_HOST_LIST[1]=

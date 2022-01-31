@@ -25,7 +25,7 @@ export NODE_HOSTS_STRING=${NODE_HOST_LIST[@]}
 
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 
-# set up cluster (assign IP of MASTER_HOST)-setting
+# set up cluster-setting
 export NUM_WORKER=32
 export NUM_SERVER=8
 

@@ -18,7 +18,7 @@ NODE_HOST_LIST[0]=127.0.0.1
 
 export NUM_NODE=${#NODE_HOST_LIST[@]}
 
-# set up cluster (assign IP of MASTER_HOST)-setting
+# set up cluster-setting
 export NUM_WORKER=4
 export NUM_SERVER=1
 

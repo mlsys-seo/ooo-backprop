@@ -12,7 +12,7 @@ export MASTER_PORT=1234
 export NODE_HOST=127.0.0.1
 export NUM_NODE=1
 
-# set up cluster (assign IP of MASTER_HOST)-setting
+# set up cluster-setting
 export NUM_WORKER=4
 export NUM_SERVER=1
 

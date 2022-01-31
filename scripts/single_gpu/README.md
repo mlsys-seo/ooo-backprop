@@ -14,3 +14,5 @@
 |:---:|:---:|:---:|:---:|
 | single_gpu_densenet_k12_b32_base.sh | 1 | 1 | `p3.2xlarge` |
 | single_gpu_densenet_k12_b32_ooo.sh | 1 | 1 | `p3.2xlarge` |
+| single_gpu_mobilenet_v3_a0.25_b32_base.sh | 1 | 1 | `p3.2xlarge` |
+| single_gpu_mobilenet_v3_a0.25_b32_ooo.sh | 1 | 1 | `p3.2xlarge` |

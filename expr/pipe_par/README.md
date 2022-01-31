@@ -29,4 +29,4 @@ $ cd ooo-backprop/scripts/pipe_par/finetune
 $ # Edit the following script for MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
 $ ./run_1node_4gpu_finetune_gpipe.sh
 ```
-Note that you need to git-clone the repository and run the script only in the master node (MASTER_HOST which should be NODE_HOST_LIST[0]).
+Note that you need to git-clone the repository and run the script only in the master node (that is, MASTER_HOST in the scripts which should be the same as NODE_HOST_LIST[0]).

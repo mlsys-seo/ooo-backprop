@@ -5,6 +5,7 @@
 Out-Of-Order(OOO) Backprop is an effective scheduling technique for neural network training. By exploiting the dependencies of gradient computations, ooo backprop enables to reorder their executions to make the most of the GPU resources. We show that the GPU utilization in single and multi-GPU training can be commonly improve by applying ooo backprop and prioritizing critical operations. 
 We propose three scheduling algorithms based on ooo backprop. For single-GPU training, we schedule with multi-stream ooo computation to mask the kernel launch overhead. In data-parallel training, we reorder the gradient computations to maximize the overlapping of computation and parameter communication; in pipeline-parallel training, we prioritize critical gradient computations to reduce the pipeline stalls.
 
+Repository Structure: 
 ```AWS-doc/``` Simple tips to set up AWS Instances for reproducing experiments.
 
 ```tensorflow/``` Source code of TensorFlow (v2.4) modified to (optionally) run with ooo backprop.
@@ -14,6 +15,17 @@ We propose three scheduling algorithms based on ooo backprop. For single-GPU tra
 ```expr/``` Python scripts for defining and training the eval-uated models. Three sub-directories contain the code forthe three sets of experiments.
 
 ```scripts/``` Bash scripts for running all the experiments.
+
+## Repository Location for each set of experiments
+- [Single-GPU Training](expr/single_gpu/)
+- [Pipeline-Parallel Training](expr/pipe_par/)
+- [Data-Parallel Training](expr/data_par/)
+
+## Quickstart
+- [about AWS setup](AWS-doc)
+- [Prepared Scripts for Single-GPU Training](scripts/single_gpu/)
+- [Prepared Scripts for Pipeline-Parallel Training](scripts/pipe_par/)
+- [Prepared Scripts for Data-Parallel Training](scripts/data_par/)
 
 ## Performance
 OOO BackProp is evaluated with twelve neural network and five public datasets. The following is a subset of the evaluation results for single-GPU, data-parallel, and pipeline-parallel training experiments.
@@ -32,14 +44,3 @@ OOO BackProp is evaluated with twelve neural network and five public datasets. T
 
 ![datap](https://user-images.githubusercontent.com/78071764/151532987-d56e3311-407d-406e-b389-ab811267eda9.png)
 
-
-## Quickstart
-- [about AWS setup](AWS-doc)
-- [Prepared Scripts for Single-GPU Training](scripts/single_gpu/)
-- [Prepared Scripts for Pipeline-Parallel Training](scripts/pipe_par/)
-- [Prepared Scripts for Data-Parallel Training](scripts/data_par/)
-
-## Implemantaion
-- [Single-GPU Training](expr/single_gpu/)
-- [Pipeline-Parallel Training](expr/pipe_par/)
-- [Data-Parallel Training](expr/data_par/)

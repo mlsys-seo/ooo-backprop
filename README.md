@@ -13,14 +13,9 @@ Repository Structure:
 
 ```byteps/``` Source code of BytePS (v0.2.5) modified to (optionally) run with ooo backprop.
 
-```expr/``` Python scripts for defining and training the eval-uated models. Three sub-directories contain the code forthe three sets of experiments.
+```expr/``` Python scripts for defining and training the evaluated models. Three sub-directories contain the code forthe three sets of experiments.
 
 ```scripts/``` Bash scripts for running all the experiments.
-
-## Repository Location for each set of experiments
-- [Single-GPU Training](expr/single_gpu/)
-- [Pipeline-Parallel Training](expr/pipe_par/)
-- [Data-Parallel Training](expr/data_par/)
 
 ## Quickstart
 - [about AWS setup](AWS-doc)
@@ -28,6 +23,13 @@ Repository Structure:
 - [Prepared Scripts for Pipeline-Parallel Training](scripts/pipe_par/)
 - [Prepared Scripts for Data-Parallel Training](scripts/data_par/)
 
+## Repository Location for each set of experiments
+To run more experiments (other than our prepared ones), see the following locatons.
+
+- [Single-GPU Training](expr/single_gpu/)
+- [Pipeline-Parallel Training](expr/pipe_par/)
+- [Data-Parallel Training](expr/data_par/)
+ 
 ## Performance
 OOO BackProp is evaluated with twelve neural network and five public datasets. The following is a subset of the evaluation results for single-GPU, data-parallel, and pipeline-parallel training experiments.
 

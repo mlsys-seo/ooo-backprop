@@ -10,7 +10,6 @@
 - Step 1: Choose an Amazon Machine Images(AMI)
     - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
 
-
 - Step 2: Choose an Instance Type
     - For 1 gpu / node: `p3.2xlarge` instance
 
@@ -20,7 +19,10 @@
 
 ## 2. Run the expriments
 
-
 ```bash
-$ ./scripts/remote/run.sh
+git clone https://github.com/mlsys-seo/ooo-backprop.git
+# To run OOO-BackProp single GPU experiment
+$ ./scripts/single_gpu/single_gpu_densenet_k12_b32_ooo.sh
+# To run XLA single GPU experiment
+$ ./scripts/single_gpu/single_gpu_densenet_k12_b32_base.sh
 ```

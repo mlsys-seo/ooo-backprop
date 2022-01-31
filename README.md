@@ -6,6 +6,7 @@ Out-Of-Order(OOO) Backprop is an effective scheduling technique for neural netwo
 We propose three scheduling algorithms based on ooo backprop. For single-GPU training, we schedule with multi-stream ooo computation to mask the kernel launch overhead. In data-parallel training, we reorder the gradient computations to maximize the overlapping of computation and parameter communication; in pipeline-parallel training, we prioritize critical gradient computations to reduce the pipeline stalls.
 
 Repository Structure: 
+
 ```AWS-doc/``` Simple tips to set up AWS Instances for reproducing experiments.
 
 ```tensorflow/``` Source code of TensorFlow (v2.4) modified to (optionally) run with ooo backprop.

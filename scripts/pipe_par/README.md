@@ -13,6 +13,8 @@
 
 ## Pre-Training Experiments
 
+Launch 8, 16, 24, or 32 AWS instances and edit the script file... Then run the script on the first node (NODE_HOST_LIST[0]).
+
 - `/pretrain`
 
 | script | number of nodes | number of GPUs | AWS instance |

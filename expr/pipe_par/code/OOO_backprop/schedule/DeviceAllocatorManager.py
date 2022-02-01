@@ -1,3 +1,5 @@
+from .utils import *
+
 class DeviceAllocatorManager:
   def __init__ (self,
                 gpu_size,

@@ -227,7 +227,7 @@ class BertModel(object):
       self.forward_stage_last_ops = forward_stage_last_ops
 
 
-      with tf.device(device_manager.get_embedding_matmul_device()):
+      with tf.device(device_manager.get_pooler_device()):
         self.sequence_output = self.all_encoder_layers[-1]
         # The "pooler" converts the encoded sequence tensor of shape
         # [batch_size, seq_length, hidden_size] to a tensor of shape
@@ -932,15 +932,16 @@ def transformer_model(input_tensor,
             # print(layer_output)
             all_layer_outputs.append(layer_output)
 
-  if do_return_all_layers:
-    final_outputs = []
-    for layer_output in all_layer_outputs:
-      final_output = reshape_from_matrix(layer_output, input_shape)
-      final_outputs.append(final_output)
-    return final_outputs, forward_stage_last_ops
-  else:
-    final_output = reshape_from_matrix(prev_output, input_shape)
-    return final_output, forward_stage_last_ops
+  with tf.device(device_manager.get_pooler_device()):
+    if do_return_all_layers:
+      final_outputs = []
+      for layer_output in all_layer_outputs:
+        final_output = reshape_from_matrix(layer_output, input_shape)
+        final_outputs.append(final_output)
+      return final_outputs, forward_stage_last_ops
+    else:
+      final_output = reshape_from_matrix(prev_output, input_shape)
+      return final_output, forward_stage_last_ops
 
 
 def get_shape_list(tensor, expected_rank=None, name=None):

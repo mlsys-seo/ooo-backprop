@@ -635,7 +635,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
   # instead.
   
   with tf.variable_scope("loss", reuse=tf.AUTO_REUSE):
-    with tf.device(device_manager.get_embedding_matmul_device()):
+    with tf.device(device_manager.get_loss_device()):
       output_layer = model.get_pooled_output()
 
       hidden_size = output_layer.shape[-1]

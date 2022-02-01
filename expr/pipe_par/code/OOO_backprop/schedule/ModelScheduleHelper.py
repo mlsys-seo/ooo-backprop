@@ -100,11 +100,15 @@ class ModelScheduleHelper:
 
   def set_output_gradient_ops(self, op):
     virtual_layers_idx = get_virtual_layer_idx(op.name)
+    if virtual_layers_idx is -1:
+      virtual_layers_idx = self.virtual_layers_size-1 if LOSS in op.name or POOLER in op.name else virtual_layers_idx
     micro_batch_idx = get_micro_batch_idx(op.name)
     self.micro_models[micro_batch_idx].set_output_gradient_ops(op, virtual_layers_idx)
 
   def set_weight_gradient_ops(self, op):
     virtual_layers_idx = get_virtual_layer_idx(op.name)
+    if virtual_layers_idx is -1:
+      virtual_layers_idx = self.virtual_layers_size-1 if LOSS in op.name or POOLER in op.name else virtual_layers_idx
     micro_batch_idx = get_micro_batch_idx(op.name)
     self.micro_models[micro_batch_idx].set_weight_gradient_ops(op, virtual_layers_idx)
 

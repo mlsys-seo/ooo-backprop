@@ -169,7 +169,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
   # If you want to use the token-level output, use model.get_sequence_output()
   # instead.
 
-  with tf.device(device_manager.get_embedding_matmul_device()):
+  with tf.device(device_manager.get_loss_device()):
     (masked_lm_loss,
       masked_lm_example_loss, masked_lm_log_probs) = get_masked_lm_output(
           bert_config, model.get_sequence_output(), model.get_embedding_table(),
@@ -220,7 +220,8 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
         micro_batch_size,
         bert_config.num_hidden_layers,
         modulo_batch,
-        pipeline_style)
+        pipeline_style,
+        is_pretrain=True)
 
     all_losses = []
     forward_stage_last_ops = []
@@ -242,7 +243,6 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
       (assignment_map, initialized_variable_names
       ) = modeling.get_assignment_map_from_checkpoint(tvars, init_checkpoint)
       if use_tpu:
-
         def tpu_scaffold():
           tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
           return tf.train.Scaffold()
@@ -250,19 +250,6 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
         scaffold_fn = tpu_scaffold
       else:
         tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
-
-
-    # print("variables..........")
-    # for var in tvars:
-    #   print(var.name)
-
-    #tf.logging.info("**** Trainable Variables ****")
-    #for var in tvars:
-    #  init_string = ""
-    #  if var.name in initialized_variable_names:
-    #    init_string = ", *INIT_FROM_CKPT*"
-    #  tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
-    #                  init_string)
 
     output_spec = None
     if mode == tf.estimator.ModeKeys.TRAIN:
@@ -315,12 +302,6 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
           loss=total_loss,
           train_op=group_ops,
           scaffold_fn=scaffold_fn)
-
-      #output_spec = tf.estimator.tpu.TPUEstimatorSpec(
-      #    mode=mode,
-      #    loss=total_loss,
-      #    train_op=train_op,
-      #    scaffold_fn=scaffold_fn)
 
     elif mode == tf.estimator.ModeKeys.EVAL:
 

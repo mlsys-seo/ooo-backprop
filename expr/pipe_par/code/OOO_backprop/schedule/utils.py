@@ -15,6 +15,9 @@ MUL_GRAD="/mul_2_grad/Mul"
 GRADIENTS="gradients"
 OUTPUT_GRAD_NAME="OUT_GRAD"
 WEIGHT_GRAD_NAME="WEIGHT_GRAD"
+LOSS='loss'
+POOLER='pooler'
+EMBEDDING='embeddings'
 
 MODULO = 'mod'
 FASTFORWARD = 'fast'

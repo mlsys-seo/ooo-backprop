@@ -1,16 +1,40 @@
-# Prepared scripts for Single GPU Experiments
+# Implementation OOO on Single-GPU
 
-- Implemantation code is [here](../../expr/single_gpu)
-- model: DenseNet, MobileNet
+## 1. Environment Setup
 
-## AWS common setup
-- For EC2 instanse, Use `Deep Learning AMI (Ubuntu 18.04) Version 56.0` image which already contains everything for experiments(NVIDIA driver, docker, git, etc...)
+### On-Promise Setup
+- Prerequisites: nvidia driver, docker, git
 
-## Experiments
+### AWS Setup
 
-| script | number of nodes | number of GPUs | AWS instance |
-|:---:|:---:|:---:|:---:|
-| single_gpu_densenet_k12_b32_base.sh | 1 | 1 | `p3.2xlarge` |
-| single_gpu_densenet_k12_b32_ooo.sh | 1 | 1 | `p3.2xlarge` |
-| single_gpu_mobilenet_v3_a0.25_b32_base.sh | 1 | 1 | `p3.2xlarge` |
-| single_gpu_mobilenet_v3_a0.25_b32_ooo.sh | 1 | 1 | `p3.2xlarge` |
+- Step 1: Choose an Amazon Machine Images(AMI)
+    - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
+
+- Step 2: Choose an Instance Type
+    - Node: `p3.2xlarge` instance
+
+## 2. Run the expriments
+
+```bash
+git clone https://github.com/mlsys-seo/ooo-backprop.git
+cd ooo-backprop
+
+# To run OOO-BackProp single GPU experiment
+$ ./scripts/single_gpu/single_gpu_densenet_k24_b32_ooo.sh
+$ ./scripts/single_gpu/single_gpu_densenet_k32_b32_ooo.sh
+$ ./scripts/single_gpu/single_gpu_densenet_k24_b64_ooo.sh
+$ ./scripts/single_gpu/single_gpu_densenet_k32_b64_ooo.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b32_ooo.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b32_ooo.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b64_ooo.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b64_ooo.sh
+
+# To run XLA single GPU experiment
+$ ./scripts/single_gpu/single_gpu_densenet_k24_b32_base.sh
+$ ./scripts/single_gpu/single_gpu_densenet_k32_b32_base.sh
+$ ./scripts/single_gpu/single_gpu_densenet_k24_b64_base.sh
+$ ./scripts/single_gpu/single_gpu_densenet_k32_b64_base.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b32_base.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b32_base.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b64_base.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b64_base.sh

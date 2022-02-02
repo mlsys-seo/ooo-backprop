@@ -25,4 +25,3 @@
 | single_gpu_mobilenet_v3_a0.5_b64_ooo.sh | 1 | 1 | `p3.2xlarge` |
 | single_gpu_mobilenet_v3_a1.0_b64_base.sh | 1 | 1 | `p3.2xlarge` |
 | single_gpu_mobilenet_v3_a1.0_b64_ooo.sh | 1 | 1 | `p3.2xlarge` |
-```

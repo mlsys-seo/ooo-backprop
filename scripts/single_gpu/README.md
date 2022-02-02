@@ -21,20 +21,3 @@ cd ooo-backprop
 
 # To run OOO-BackProp single GPU experiment
 $ ./scripts/single_gpu/single_gpu_densenet_k24_b32_ooo.sh
-$ ./scripts/single_gpu/single_gpu_densenet_k32_b32_ooo.sh
-$ ./scripts/single_gpu/single_gpu_densenet_k24_b64_ooo.sh
-$ ./scripts/single_gpu/single_gpu_densenet_k32_b64_ooo.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b32_ooo.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b32_ooo.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b64_ooo.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b64_ooo.sh
-
-# To run XLA single GPU experiment
-$ ./scripts/single_gpu/single_gpu_densenet_k24_b32_base.sh
-$ ./scripts/single_gpu/single_gpu_densenet_k32_b32_base.sh
-$ ./scripts/single_gpu/single_gpu_densenet_k24_b64_base.sh
-$ ./scripts/single_gpu/single_gpu_densenet_k32_b64_base.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b32_base.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.5_b32_base.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b64_base.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a1.0_b64_base.sh

@@ -1,4 +1,6 @@
-# Implementation OOO of Pipeline-Parallel
+# Prepared scripts for Data Parallel Experiments
+
+- Implemantation code is [here](../../expr/pipe_par)
 
 ## 1. Environment Setup
 

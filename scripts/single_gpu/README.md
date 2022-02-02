@@ -1,6 +1,6 @@
 # Prepared scripts for Single GPU Experiments
 
-- Implemantation code is on [here](../../expr/single_gpu)
+- Implemantation code is [here](../../expr/single_gpu)
 - model: DenseNet, MobileNet
 
 ## AWS common setup

@@ -1,4 +1,4 @@
-# Implementation OOO of Pipeline-Parallel
+# OOO Implementation of Pipeline-Parallel
 
 - model: BERT
 - communication method: `NCCL` for intra-communication, `GRPC` for inter-communication

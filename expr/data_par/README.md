@@ -1,29 +1,21 @@
-# Implementation OOO of Data-Parallel on BytePS
-## 1. Environment Setup
+# Prepared scripts for Data Parallel Experiments
 
-### On-Promise Setup
-- Prerequisites: nvidia driver, docker, git
+- Implemantation code is [here](../../expr/data_par)
+- model: `ResNet-50` and `ResNet-101`
+- communication method: `NCCL` for intra-communication, `GRPC` for inter-communication
+- `..BytePS.sh`: baseline
+- `..OOO-Backprop.sh`: OOO-Backprop
 
-### AWS Setup
+## AWS common setup
+- For multi-node experiments, you must set same `Security Group`.
+- `Security Group` must allows all TCP ports within itself.
+- For EC2 instanse, Use `Deep Learning AMI (Ubuntu 18.04) Version 56.0` image which already contains everything for experiments(NVIDIA driver, docker, git, etc...)
 
-- Step 1: Choose an Amazon Machine Images(AMI)
-    - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
+## Expreiments
 
-
-- Step 2: Choose an Instance Type
-    - For 4 gpus / node: `p3.8xlarge` instance
-
-
-- Step 3: Configure Instance
-    - All instances have to be in same `Security Group`
-    - Open all TCP port inside `Security Group` for the worker communication
-
-## 2. Run the Expreriments
-
-```bash
-$ git clone https://github.com/mlsys-seo/ooo-backprop
-$ cd ooo-backprop/scripts/data_par
-$ # Edit the following script for MASTER_HOST, NODE_HOST_LIST[], SSH_KEY_PATH, SSH_ID
-$ ./run_1node_4gpu_resnet50_BytePS.sh
-```
-Note that you need to git-clone the repository and run the script only in the master node (that is, MASTER_HOST in the scripts which should be the same as NODE_HOST_LIST[0]).
+| script | number of nodes | number of GPUs | AWS instance |
+|:---:|:---:|:---:|:---:|
+| run_1node... | 1 | 4 | `p3.8xlarge` |
+| run_4node... | 4 | 16 | `p3.8xlarge` |
+| run_8node... | 8 | 32 | `p3.8xlarge` |
+| run_12node... | 12 | 64 | `p3.8xlarge` |

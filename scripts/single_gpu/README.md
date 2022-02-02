@@ -1,5 +1,5 @@
 # Prepared scripts for Single GPU Experiments
-- Implemantation code is [here](../expr/single_gpu)
+- Implemantation code is [here](../../expr/single_gpu)
 
 ## 1. Environment Setup
 

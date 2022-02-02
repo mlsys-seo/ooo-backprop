@@ -1,29 +1,16 @@
-# Implementation OOO on Single-GPU
+# Prepared scripts for Single GPU Experiments
 
-## 1. Environment Setup
+- Implemantation code is [here](../../expr/single_gpu)
+- model: DenseNet, MobileNet
 
-### On-Promise Setup
-- Prerequisites: nvidia driver, docker, git
+## AWS common setup
+- For EC2 instanse, Use `Deep Learning AMI (Ubuntu 18.04) Version 56.0` image which already contains everything for experiments(NVIDIA driver, docker, git, etc...)
 
-### AWS Setup
+## Experiments
 
-- Step 1: Choose an Amazon Machine Images(AMI)
-    - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
-
-- Step 2: Choose an Instance Type
-    - Node: `p3.2xlarge` instance
-
-## 2. Run the expriments
-
-```bash
-git clone https://github.com/mlsys-seo/ooo-backprop.git
-cd ooo-backprop
-
-# To run OOO-BackProp single GPU experiment
-$ ./scripts/single_gpu/single_gpu_densenet_k12_b32_ooo.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.25_b32_ooo.sh
-
-# To run XLA single GPU experiment
-$ ./scripts/single_gpu/single_gpu_densenet_k12_b32_base.sh
-$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.25_b32_base.sh
-```
+| script | number of nodes | number of GPUs | AWS instance |
+|:---:|:---:|:---:|:---:|
+| single_gpu_densenet_k12_b32_base.sh | 1 | 1 | `p3.2xlarge` |
+| single_gpu_densenet_k12_b32_ooo.sh | 1 | 1 | `p3.2xlarge` |
+| single_gpu_mobilenet_v3_a0.25_b32_base.sh | 1 | 1 | `p3.2xlarge` |
+| single_gpu_mobilenet_v3_a0.25_b32_ooo.sh | 1 | 1 | `p3.2xlarge` |

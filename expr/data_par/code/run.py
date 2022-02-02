@@ -8,6 +8,7 @@ import tensorflow as tf
 import byteps.tensorflow as byteps
 
 from OOO_backprop import get_args
+from OOO_backprop import get_iter_time_list
 from OOO_backprop import print_timestep
 from OOO_backprop import print_log
 from OOO_backprop.models import ResNet
@@ -80,8 +81,20 @@ def train():
         
         # training
         for run_count in range(args.num_training_step):
-            with print_timestep(f"{run_count} iteration", average=False):
+            with print_timestep(f"{run_count+1}/{args.num_training_step} iter", average=False):
                 _ = sess.run([train_op])
+
+        iter_time_list = get_iter_time_list()
+
+        throughput_list = [ args.batch_size * byteps.size() / iter_time for iter_time in iter_time_list ]
+        throughput_list.sort(reverse=True)
+
+        print("- - - - - - - - throughputs - - - - - - - -")
+        for idx, throughput in enumerate(throughput_list):
+            print_log(f"{round(throughput, 4)} sample/s")
+            if idx >= int(len(throughput_list)/4*3):
+                break
+        print("- - - - - - - - - - - - - - - - - - - - - -")
 
 def main(_):
     train()

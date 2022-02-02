@@ -19,9 +19,12 @@ bcolors = {
 def print_log(message, color='G'):
     print(f"{bcolors[color]}{message}{bcolors['ENDC']}")
 
-ITER_SUM = 0
-ITER_COUNT = 0
 IS_FIRST = 1
+ITER_TIME_LIST = []
+
+def get_iter_time_list():
+  global ITER_TIME_LIST
+  return ITER_TIME_LIST
 
 class print_timestep(object):
   def __init__(self, message, average=True, color='Y'):
@@ -37,18 +40,15 @@ class print_timestep(object):
     self.end_time = time.time()
     iter_time = self.end_time - self.start_time
     
-    global ITER_SUM
-    global ITER_COUNT
     global IS_FIRST
+    global ITER_TIME_LIST
 
-    if (ITER_COUNT < 10) or self.average == False:
-      print(f"{self.color}{self.message}: {round(iter_time, 4)} sec{bcolors['ENDC']}")
-
+    if IS_FIRST == True:
+      IS_FIRST = 0
     else:
-      ITER_SUM = ITER_SUM + iter_time
-      print(f"{self.color}{self.message}: {round(iter_time, 4)} sec | avg: {ITER_SUM/ITER_COUNT} / iter {bcolors['ENDC']}")
+      ITER_TIME_LIST.append(round(iter_time, 4))
 
-    ITER_COUNT = ITER_COUNT + 1
+    print(f"{self.color}{self.message}{bcolors['ENDC']}")
 
 def print_graph(graph):
   print("\n\n======= print ops in dp_schedule ========")

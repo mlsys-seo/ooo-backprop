@@ -4,7 +4,7 @@
 export MODEL_SIZE=50
 export BATCH_SIZE=128
 export REVERSE_FIRST_K=30
-export NUM_TRAINING_STEP=50
+export NUM_TRAINING_STEP=40
 
 # set up cluster (assign IP of MASTER_HOST)
 export MASTER_HOST=127.0.0.1

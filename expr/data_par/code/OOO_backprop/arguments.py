@@ -66,7 +66,7 @@ def _add_training_args(parser):
                        help='batch_size.')
     group.add_argument('--batch_size', type=int, default=32,
                        help='batch_size.')
-    group.add_argument('--num_training_step', type=int, default=30,
+    group.add_argument('--num_training_step', type=int, default=40,
                        help='batch_size.')
     return parser
 

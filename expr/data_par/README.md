@@ -1,6 +1,5 @@
-# Prepared scripts for Data Parallel Experiments
+# Implementation OOO of Data-Parallel on BytePS
 
-- Implemantation code is [here](../../expr/data_par)
 - model: `ResNet-50` and `ResNet-101`
 - communication method: `NCCL` for intra-communication, `GRPC` for inter-communication
 - `..BytePS.sh`: baseline

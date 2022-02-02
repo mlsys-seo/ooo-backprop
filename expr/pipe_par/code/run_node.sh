@@ -49,7 +49,7 @@ if [[ "$TASK" == "pretrain" ]]
 then
     # pretrining
     python3 $CODE_DIR/OOO_backprop/run_pretraining.py \
-            --input_data=$INPUT_DATA \
+            --input_file=$INPUT_DATA \
             --do_train=true \
             --max_seq_length=128 \
             --learning_rate=2e-5 \

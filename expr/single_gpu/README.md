@@ -1,4 +1,4 @@
-# Implementation OOO on Single-GPU
+# OOO Implementation on Single-GPU
 
 - model: DenseNet, MobileNet
 

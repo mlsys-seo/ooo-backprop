@@ -1,7 +1,7 @@
 # Prepared scripts for Single GPU Experiments
 
 - Implemantation code is on [here](../../expr/single_gpu)
-- model: DenseNet 
+- model: DenseNet, MobileNet
 
 ## AWS common setup
 - For EC2 instanse, Use `Deep Learning AMI (Ubuntu 18.04) Version 56.0` image which already contains everything for experiments(NVIDIA driver, docker, git, etc...)

@@ -1,4 +1,4 @@
-# Prepared scripts for Single GPU Experiments
+# Implementation OOO on Single-GPU
 
 - model: DenseNet, MobileNet
 

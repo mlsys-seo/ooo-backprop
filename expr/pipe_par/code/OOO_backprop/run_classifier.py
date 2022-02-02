@@ -158,6 +158,8 @@ flags.DEFINE_string(
     "Pipeline Style you want to schedule. "
     "gpipe, fastforward, modulo")
 
+
+
 gpu_size = FLAGS.gpu_size
 cluster_size = FLAGS.cluster_size
 total_gpu_size = gpu_size * cluster_size
@@ -166,7 +168,6 @@ mini_batch_size = int(FLAGS.train_batch_size / micro_batch_size)
 modulo_batch = FLAGS.modulo_batch
 
 pipeline_style = FLAGS.pipeline_style
-
 
 class InputExample(object):
   """A single training/test example for simple sequence classification."""
@@ -634,7 +635,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
   # If you want to use the token-level output, use model.get_sequence_output()
   # instead.
   
-  with tf.variable_scope("cls/predictions", reuse=tf.AUTO_REUSE):
+  with tf.variable_scope("cls", reuse=tf.AUTO_REUSE):
     with tf.device(device_manager.get_loss_device()):
       output_layer = model.get_pooled_output()
 
@@ -659,7 +660,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
       one_hot_labels = tf.one_hot(labels, depth=num_labels, dtype=tf.float32)
 
       per_example_loss = -tf.reduce_sum(one_hot_labels * log_probs, axis=-1)
-      loss = tf.reduce_mean(per_example_loss)
+      loss = tf.reduce_mean(per_example_loss, name='FORWARD_LAST_OP') # TODO
 
     return (loss, per_example_loss, logits, probabilities, model.forward_stage_last_ops)
 
@@ -923,6 +924,8 @@ def main(_):
   print("Attention Head    : ", bert_config.num_attention_heads)
   print("Number of Layers  : ", bert_config.num_hidden_layers)
   print("########################################################################")
+
+
 
   tf.gfile.MakeDirs(FLAGS.output_dir)
 

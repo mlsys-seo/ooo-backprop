@@ -15,9 +15,11 @@ MUL_GRAD="/mul_2_grad/Mul"
 GRADIENTS="gradients"
 OUTPUT_GRAD_NAME="OUT_GRAD"
 WEIGHT_GRAD_NAME="WEIGHT_GRAD"
-LOSS='cls/predictions'
+LOSS='cls'
 POOLER='pooler'
 EMBEDDING='embeddings'
+FORWARD_LAST_OP='FORWARD_LAST_OP'
+RESHAPE='/Reshape/shape'
 
 MODULO = 'mod'
 FASTFORWARD = 'fast'
@@ -42,5 +44,6 @@ def get_micro_batch_idx(op_name):
   return get_idx_util(op_name, MICRO_BATCH_PREFIX, MICRO_BATCH_SUFFIX)
 
 def set_dependency_util(before_op, next_op):
+  print(before_op.name, " -> ", next_op.name)
   next_op._add_control_input( before_op )
 

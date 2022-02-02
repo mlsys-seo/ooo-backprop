@@ -107,8 +107,6 @@ flags.DEFINE_integer(
     "num_tpu_cores", 8,
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
-
-# OOO Parameters
 flags.DEFINE_integer(
     "gpu_size", 4,
     "The number of gpus per cluster.")
@@ -138,6 +136,8 @@ flags.DEFINE_string(
     "Pipeline Style you want to schedule. "
     "gpipe, fastforward, modulo")
 
+
+
 gpu_size = FLAGS.gpu_size
 cluster_size = FLAGS.cluster_size
 total_gpu_size = gpu_size * cluster_size
@@ -146,7 +146,6 @@ mini_batch_size = int(FLAGS.train_batch_size / micro_batch_size)
 modulo_batch = FLAGS.modulo_batch
 
 pipeline_style = FLAGS.pipeline_style
-
 
 
 def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
@@ -423,7 +422,7 @@ def get_next_sentence_output(bert_config, input_tensor, labels):
     labels = tf.reshape(labels, [-1])
     one_hot_labels = tf.one_hot(labels, depth=2, dtype=tf.float32)
     per_example_loss = -tf.reduce_sum(one_hot_labels * log_probs, axis=-1)
-    loss = tf.reduce_mean(per_example_loss)
+    loss = tf.reduce_mean(per_example_loss, name="FORWARD_LAST_OP") # TODO
     return (loss, per_example_loss, log_probs)
 
 
@@ -544,6 +543,7 @@ def main(_):
   print("Attention Head    : ", bert_config.num_attention_heads)
   print("Number of Layers  : ", bert_config.num_hidden_layers)
   print("########################################################################")
+
 
   tf.gfile.MakeDirs(FLAGS.output_dir)
 

@@ -3,7 +3,9 @@ class ModelOps:
     self.model_first_op = None
     self.forward_first_op_per_virtual_layers = {}
     self.forward_last_op_per_virtual_layers = forward_last_op_per_virtual_layers
+    self.forward_last_op = None
     self.backward_first_op_per_virtual_layers = {}
+    self.backward_first_op = None
     self.output_gradient_ops = {} 
     self.weight_gradient_ops = {}
     self.backward_last_op_per_virtual_layers = {}
@@ -17,9 +19,15 @@ class ModelOps:
     if key not in self.forward_first_op_per_virtual_layers:
       self.forward_first_op_per_virtual_layers[key] = op
 
+  def set_forward_last_op(self, op):
+    self.forward_last_op = op
+
   def set_backward_first_op_per_virtual_layers(self, op, key):
     if key not in self.backward_first_op_per_virtual_layers:
       self.backward_first_op_per_virtual_layers[key] = op
+
+  def set_backward_first_op(self, op):
+    self.backward_first_op = op
 
   def set_output_gradient_ops(self, op, key):
     if key not in self.output_gradient_ops:
@@ -44,8 +52,14 @@ class ModelOps:
   def get_forward_first_op_per_virtual_layers(self):
     return self.forward_first_op_per_virtual_layers
 
+  def get_forward_last_op(self):
+    return self.forward_last_op
+
   def get_forward_last_op_per_virtual_layers(self):
     return self.forward_last_op_per_virtual_layers
+
+  def get_backward_first_op(self):
+    return self.backward_first_op
 
   def get_backward_first_op_per_virtual_layers(self):
     return self.backward_first_op_per_virtual_layers

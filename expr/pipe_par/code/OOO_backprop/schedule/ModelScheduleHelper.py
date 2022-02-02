@@ -51,8 +51,9 @@ class ModelScheduleHelper:
 
   def _schedule_forward_process(self):
     self._schedule_forward_first_virtual_layers()
-    self._schedule_forward_second_virtual_layers() 
-    self._schedule_forward_second_last_virtual_layers()
+    self._schedule_forward_second_virtual_layers()
+    if GPIPE not in self.schedule_type:
+      self._schedule_forward_second_last_virtual_layers()
 
 
   def _schedule_race_condition(self):
@@ -100,8 +101,6 @@ class ModelScheduleHelper:
 
   def set_output_gradient_ops(self, op):
     virtual_layers_idx = get_virtual_layer_idx(op.name)
-    if virtual_layers_idx is -1:
-      virtual_layers_idx = self.virtual_layers_size-1 if LOSS in op.name or POOLER in op.name else -1
     micro_batch_idx = get_micro_batch_idx(op.name)
     self.micro_models[micro_batch_idx].set_output_gradient_ops(op, virtual_layers_idx)
 

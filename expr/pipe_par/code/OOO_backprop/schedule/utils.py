@@ -15,7 +15,7 @@ MUL_GRAD="/mul_2_grad/Mul"
 GRADIENTS="gradients"
 OUTPUT_GRAD_NAME="OUT_GRAD"
 WEIGHT_GRAD_NAME="WEIGHT_GRAD"
-LOSS='loss'
+LOSS='cls/predictions'
 POOLER='pooler'
 EMBEDDING='embeddings'
 

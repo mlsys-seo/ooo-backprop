@@ -42,7 +42,7 @@ class DeviceAllocatorManager:
     return self.gpu_seq[gpu_idx]
 
   def get_embedding_table_device(self):
-    if self.is_pretrain:
+    if self.is_pretrain and GPIPE not in self.schedule_type:
       return 'task:%d/GPU:%d' % (self.cluster_size-1, self.get_gpu_seq_idx(self.gpu_size-1))
     return 'task:0/GPU:0'
     

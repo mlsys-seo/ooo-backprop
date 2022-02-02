@@ -279,6 +279,7 @@ if __name__ == "__main__":
         warmup_step = 3
         captured_cuda_graph_step = 50 + warmup_step
         cuda_graph_oneiter_times = []
+        print("========== CUDA Graph Training Start ==========")
         for step in range(captured_cuda_graph_step):
             start_time = time.time()
             sess.run([cuda_graph_run_op], feed_dict={X: dummy_X, Y: dummy_Y})
@@ -286,6 +287,7 @@ if __name__ == "__main__":
 
             oneiter_time = end_time - start_time
             cuda_graph_oneiter_times.append(oneiter_time)
+        print("=========== CUDA Graph Training End ===========")
 
         # The execution time of the first few iteration is high because of TF graph initialization and GPU initialization overhead.
         # So it disturbs to measure the average execution time.
@@ -294,4 +296,5 @@ if __name__ == "__main__":
             cuda_graph_oneiter_times.pop()
 
         avg_time = sum(cuda_graph_oneiter_times) / len(cuda_graph_oneiter_times)
-        print("CUDA Graph Average Time : {:.6f}s".format(avg_time))
+        print("CUDA Graph Training Throughput : {:.2f} (images/sec)".format(BATCH / avg_time))
+

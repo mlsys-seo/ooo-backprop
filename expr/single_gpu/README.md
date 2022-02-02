@@ -13,16 +13,16 @@
 - Step 2: Choose an Instance Type
     - For 1 gpu / node: `p3.2xlarge` instance
 
-- Step 3: Configure Instance
-    - All instances have to be in same `Security Group`
-    - Open all TCP port inside `Security Group` for the worker communication
-
 ## 2. Run the expriments
 
 ```bash
 git clone https://github.com/mlsys-seo/ooo-backprop.git
+
 # To run OOO-BackProp single GPU experiment
 $ ./scripts/single_gpu/single_gpu_densenet_k12_b32_ooo.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.25_b32_ooo.sh
+
 # To run XLA single GPU experiment
 $ ./scripts/single_gpu/single_gpu_densenet_k12_b32_base.sh
+$ ./scripts/single_gpu/single_gpu_mobilenet_v3_a0.25_b32_base.sh
 ```

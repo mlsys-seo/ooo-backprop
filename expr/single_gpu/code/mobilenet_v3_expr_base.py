@@ -265,6 +265,7 @@ if __name__ == "__main__":
         warmup_step = 3
         tf_graph_step = 50 + warmup_step
         oneiter_times = []
+        print("========== XLA Training Start ==========")
         for step in range(tf_graph_step):
             start_time = time.time()
             sess.run([train_op], feed_dict={X: dummy_X, Y: dummy_Y})
@@ -272,6 +273,7 @@ if __name__ == "__main__":
 
             oneiter_time = end_time - start_time
             oneiter_times.append(oneiter_time)
+        print("=========== XLA Training End ===========")
 
         # The execution time of the first few iteration is high because of TF graph initialization and GPU initialization overhead.
         # So it disturbs to measure the average execution time.
@@ -280,5 +282,5 @@ if __name__ == "__main__":
             oneiter_times.pop()
 
         avg_time = sum(oneiter_times) / len(oneiter_times)
-        print("XLA Average Time : {:.6f}s".format(avg_time))
+        print("XLA Training Throughput : {:.2f} (images/sec)".format(BATCH / avg_time))
 

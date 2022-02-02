@@ -11,11 +11,11 @@
     - Deep Learning AMI (Ubuntu 18.04) Version 56.0 
 
 - Step 2: Choose an Instance Type
-    - For 1 gpu / node: `p3.2xlarge` instance
+    - Node: `p3.2xlarge` instance
 
 ## 2. Run the expriments
 
-```bash
+```bash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
 git clone https://github.com/mlsys-seo/ooo-backprop.git
 
 # To run OOO-BackProp single GPU experiment

@@ -29,7 +29,8 @@ class DeviceAllocatorManager:
       self.quotient = int(self.layer_size / self.total_gpu_size)
       self.offset = self.layer_size % self.total_gpu_size
 
-    self.gpu_seq = [0, 1, 2, 3, 4, 5, 6, 7] if 'gpipe' in self.schedule_type else [0, 3, 2, 1, 5, 6, 7, 4]
+    # self.gpu_seq = [0, 1, 2, 3, 4, 5, 6, 7] if 'gpipe' in self.schedule_type else [0, 3, 2, 1, 5, 6, 7, 4]
+    self.gpu_seq = [0, 1, 2, 3, 4, 5, 6, 7]
 
     self.before_gpu_idx = []
     self.v_layer_num = []

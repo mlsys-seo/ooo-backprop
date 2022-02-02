@@ -15,8 +15,9 @@
 
 ## 2. Run the expriments
 
-```bash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
+```bash
 git clone https://github.com/mlsys-seo/ooo-backprop.git
+cd ooo-backprop
 
 # To run OOO-BackProp single GPU experiment
 $ ./scripts/single_gpu/single_gpu_densenet_k12_b32_ooo.sh

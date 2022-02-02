@@ -1,4 +1,4 @@
-# Implementation OOO of Data-Parallel on BytePS
+# OOO Implementation of Data-Parallel on BytePS
 
 - model: `ResNet-50` and `ResNet-101`
 - communication method: `NCCL` for intra-communication, `GRPC` for inter-communication

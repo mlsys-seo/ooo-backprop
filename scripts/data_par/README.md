@@ -1,4 +1,7 @@
-# Implementation OOO of Data-Parallel on BytePS
+# Prepared scripts for Data Parallel Experiments
+
+- Implemantation code is [here](../../expr/data_par)
+
 ## 1. Environment Setup
 
 ### On-Promise Setup

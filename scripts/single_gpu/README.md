@@ -1,4 +1,4 @@
-# Implementation OOO on Single-GPU
+# Prepared scripts for Single GPU Experiments
 
 ## 1. Environment Setup
 

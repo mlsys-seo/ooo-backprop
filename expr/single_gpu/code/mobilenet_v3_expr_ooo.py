@@ -230,22 +230,21 @@ class MobileNetV3:
 if __name__ == "__main__":
     num_classes = 1000
 
-    dummy_X = np.random.randn(BATCH, 224, 224, 3)
-    dummy_Y = np.random.randint(size=[BATCH], low=0, high=num_classes-1)
-
-    X = tf.compat.v1.placeholder(
-        shape=[BATCH, 224, 224, 3], name="input_data", dtype=tf.float32
+    dummy_X = tf.stop_gradient(
+        tf.Variable(
+            tf.random.normal([BATCH, 224, 224, 3]), name="input_data", dtype="float"
+        )
     )
-    Y = tf.compat.v1.placeholder(
-        shape=[BATCH], dtype=tf.int32, name="label_data"
+    dummy_Y = tf.random.uniform(
+        [BATCH], minval=0, maxval=num_classes - 1, dtype=tf.int32, name="label_data"
     )
 
-    logits = MobileNetV3(X, num_classes, layers, multiplier=ALPHA, reduction_ratio=4).model
+    logits = MobileNetV3(dummy_X, num_classes, layers, multiplier=ALPHA, reduction_ratio=4).model
     optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=0.1)
 
     cost = tf.reduce_mean(
         input_tensor=tf.nn.sparse_softmax_cross_entropy_with_logits(
-            labels=Y, logits=logits
+            labels=dummy_Y, logits=logits
         )
     )
 
@@ -271,7 +270,7 @@ if __name__ == "__main__":
             tf_graph_step = int(tf_graph_step_str)
 
         for step in range(tf_graph_step):
-            sess.run([train_op], feed_dict={X: dummy_X, Y: dummy_Y})
+            sess.run([train_op])
 
         ################################################
         # Executing the captured CUDA Graph.
@@ -282,7 +281,7 @@ if __name__ == "__main__":
         print("========== CUDA Graph Training Start ==========")
         for step in range(captured_cuda_graph_step):
             start_time = time.time()
-            sess.run([cuda_graph_run_op], feed_dict={X: dummy_X, Y: dummy_Y})
+            sess.run([cuda_graph_run_op])
             end_time = time.time()
 
             oneiter_time = end_time - start_time

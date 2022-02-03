@@ -3,7 +3,7 @@
 # set up Model
 export MODEL="bert_48"
 export GLOBAL_BATCH_SIZE=320
-export MICRO_BATCH_SIZE=32
+export MICRO_BATCH_SIZE=40
 export MODULO_BATCH_SIZE=1
 export NUM_TRAINING_STEP=50
 export PIPELINE_STYLE="gpipe"

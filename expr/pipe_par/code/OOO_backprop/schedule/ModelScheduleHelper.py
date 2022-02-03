@@ -22,8 +22,9 @@ class ModelScheduleHelper:
 
     self.schedule_type = schedule_type
 
-    self.micro_batch_cap = self.gpu_size if FASTFORWARD in self.schedule_type and PUSH in self.schedule_type \
-                           and self.micro_batch_size > self.gpu_size else self.micro_batch_size
+    self.push = self.micro_batch_size > self.gpu_size and PUSH in self.schedule_type
+
+    self.micro_batch_cap = self.gpu_size if self.push else self.micro_batch_size
     self.remainder_micro_batch = self.micro_batch_size - self.micro_batch_cap if self.micro_batch_size > self.micro_batch_cap else 0
 
 
@@ -37,7 +38,7 @@ class ModelScheduleHelper:
     else :
       self._schedule_gpipe_last_stage()
 
-    if PUSH in self.schedule_type:
+    if self.push:
       self._schedule_microbatch_cap_fastforward()
 
   def _prepare_forward_process(self):

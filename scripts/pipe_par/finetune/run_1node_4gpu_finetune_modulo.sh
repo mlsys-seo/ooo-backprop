@@ -6,7 +6,7 @@ export GLOBAL_BATCH_SIZE=96
 export MICRO_BATCH_SIZE=4
 export MODULO_BATCH_SIZE=1
 export NUM_TRAINING_STEP=30
-export PIPELINE_STYLE="fastforward"
+export PIPELINE_STYLE="modulo"
 export TASK="finetune"
 export MASTER_PORT=2232
 

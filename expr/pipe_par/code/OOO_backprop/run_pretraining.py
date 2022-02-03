@@ -147,7 +147,6 @@ modulo_batch = FLAGS.modulo_batch
 
 pipeline_style = FLAGS.pipeline_style
 
-
 def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
                  use_one_hot_embeddings, masked_lm_positions, masked_lm_ids, masked_lm_weights, 
                  next_sentence_labels, micro_batch_idx, device_manager):

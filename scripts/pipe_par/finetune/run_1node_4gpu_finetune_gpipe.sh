@@ -25,7 +25,7 @@ export NUM_WORKER_PER_NODE=4
 
 # set up network
 export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_pipeline_parallel:latest"
-export SSH_KEY_PATH=              # Write your SSH Key
-export SSH_ID=                    # Write your SSH ID
+export SSH_KEY_PATH="SSH_KEY_PATH"
+export SSH_ID="ACCOUNT_ID"
 
 ../../../expr/pipe_par/scripts/run.sh preset

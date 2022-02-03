@@ -44,6 +44,6 @@ def get_micro_batch_idx(op_name):
   return get_idx_util(op_name, MICRO_BATCH_PREFIX, MICRO_BATCH_SUFFIX)
 
 def set_dependency_util(before_op, next_op):
-  print(before_op.name, " -> ", next_op.name)
+  # print(before_op.name, " -> ", next_op.name)
   next_op._add_control_input( before_op )
 

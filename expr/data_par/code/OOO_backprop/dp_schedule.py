@@ -168,10 +168,9 @@ class OOO_ScheduleHelper:
             # for perfomance
             BEFORE_OP_INDEX = op_index - args.num_dependency
             if BEFORE_OP_INDEX >= 0:
+                before_forward = self._find_forward_op(v, BEFORE_OP_INDEX)
                 if args.debug_print:
                     print_log(f"FORWARD -> POLLING_CONTROL_DEPENDENCY: {before_forward.op.name}    ->    {polling_op.op.name}")
-
-                before_forward = self._find_forward_op(v, BEFORE_OP_INDEX)
                 polling_op.op._add_control_input(before_forward.op)
 
         if args.debug_print:
@@ -209,6 +208,17 @@ class OOO_ScheduleHelper:
 
     def schedule_ops(self, graph, X, loss_value, global_step):
         sync_ops, async_ops = self._extract_sync_and_async_ops(loss_value)
+        
+        if args.debug_print:
+            print_log(f"num of CONV: {len(sync_ops)}, num of Async_CONV: {len(async_ops)}\n\n\n\n\n", "P")
+
+            print("ASYNC_OPS")
+            for op in async_ops:
+                print(f"  {op[0].name}")
+            print("\n\nSYNC_OPS")
+            for op in sync_ops:
+                print(f"  {op[0].name}")
+
         self._set_applies_before_forwards(async_ops, X)
         self._reverse_k_schedule(graph)
         async_send_recv_ops = []

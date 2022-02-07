@@ -285,9 +285,9 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
       scheduler = schedule.ModelScheduleHelper (graph,
                                                 total_gpu_size,
                                                 bert_config.num_hidden_layers,
-                                                modulo_batch,
-                                                micro_batch_size,
-                                                forward_stage_last_ops,
+                                                modulo_batch, # num of seq layer
+                                                micro_batch_size, # num of microbatch
+                                                forward_stage_last_ops, # forwrad last op per virtuals
                                                 pipeline_style)
 
       scheduler.schedule()

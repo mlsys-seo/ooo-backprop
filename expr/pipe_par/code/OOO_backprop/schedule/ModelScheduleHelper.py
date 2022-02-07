@@ -13,7 +13,7 @@ class ModelScheduleHelper:
 
     self.micro_models = []
     for micro_batch_idx in range(micro_batch_size):
-      self.micro_models.append(ModelOps(forward_last_op_per_virtual_layers[micro_batch_idx]))
+      self.micro_models.append( ModelOps(forward_last_op_per_virtual_layers[micro_batch_idx]) )
 
     self.graph = graph
     self.gpu_size = gpu_size
@@ -28,19 +28,22 @@ class ModelScheduleHelper:
     self.remainder_micro_batch = self.micro_batch_size - self.micro_batch_cap if self.micro_batch_size > self.micro_batch_cap else 0
 
 
-  def schedule(self):
+  # Pipeline Schedule Function.
+  def schedule(self):                               
     self._prepare_forward_process()
     self._prepare_backward_process()
 
     self._schedule_forward_process()
     if GPIPE not in self.schedule_type:
-      self._schedule_backward_process()
+      self._schedule_backward_process()           # If current schedule type is not GPipe, do ooo schedule
     else :
-      self._schedule_gpipe_last_stage()
+      self._schedule_gpipe_last_stage()           # If current schedule type is GPipe, do gpipe schedule
 
-    if self.push:
-      self._schedule_microbatch_cap_fastforward()
+    if self.push:                                 # If current schedule requires push, process partial microbatch
+      self._schedule_microbatch_cap_fastforward() # when the first microbatch finish its backpropagation
 
+
+  # Sort necessary model operations for scheduling forward process
   def _prepare_forward_process(self):
     self._find_and_set_model_first_op()
     self._find_and_set_forward_first_op_per_virtual_layers()
@@ -48,26 +51,64 @@ class ModelScheduleHelper:
     self._find_and_set_backward_first_op_per_virtual_layers()
     self._find_and_set_backward_first_op()
 
+  # Sort necessary model operations for scheduling backward process
   def _prepare_backward_process(self):
     self._find_and_set_weight_gradient_ops()
     self._find_and_set_backward_send_op_per_virtual_layers()
 
 
 
-  def _schedule_forward_process(self):
-    self._schedule_forward_first_virtual_layers()
-    self._schedule_forward_second_virtual_layers()
-    if GPIPE not in self.schedule_type:
-      self._schedule_forward_second_last_virtual_layers()
+  def _find_and_set_model_first_op(self):
+    for op in self.graph.get_operations():
+      if self._is_model_first_op(op):
+        self.set_model_first_op(op)
 
-  def _schedule_race_condition(self):
-    self._schedule_micro_batch_race_condition()
-    if MODULO in self.schedule_type:
-      self._schedule_virtual_layers_race_condition()
+  def _find_and_set_forward_first_op_per_virtual_layers(self):
+    for op in self.graph.get_operations():
+      if self._is_forward_first_op_per_virtual_layers(op):
+        self.set_forward_first_op_per_virtual_layers(op)
 
-  def _schedule_backward_process(self):
-    self._schedule_ooo_backpropagation()
-    self._schedule_race_condition()
+  def _find_and_set_forward_last_op(self):
+    for op in self.graph.get_operations():
+      if self._is_forward_last_op(op):
+        self.set_forward_last_op(op)
+
+  def _find_and_set_backward_first_op_per_virtual_layers(self):  
+    for op in self.graph.get_operations():
+      if self._is_backward_first_op_per_virtual_layers(op):
+        self.set_backward_first_op_per_virtual_layers(op)
+
+  def _find_and_set_backward_first_op(self):
+    for op in self.graph.get_operations():
+      if self._is_backward_first_op(op):
+        self.set_backward_first_op(op)
+
+  def _find_and_set_weight_gradient_ops(self):
+    for op in self.graph.get_operations():
+      if self._is_weight_gradient_ops(op):
+        self.set_weight_gradient_ops(op)
+
+  def _find_and_set_output_gradient_ops(self):
+    for op in self.graph.get_operations():
+      if self._is_output_gradient_ops(op):
+        self.set_output_gradient_ops(op)
+
+  def _find_and_set_backward_last_op_per_virtual_layers(self):
+    self._find_and_set_output_gradient_ops()
+    for micro_batch_idx in range(self.micro_batch_size):
+      map = self.micro_models[micro_batch_idx].get_output_gradient_ops()
+      for virtual_layers_idx in range(self.virtual_layers_size):
+        op = map[virtual_layers_idx][-1]
+        self.set_backward_last_op_per_virtual_layers(op, micro_batch_idx, virtual_layers_idx)
+
+  def _find_and_set_backward_send_op_per_virtual_layers(self):
+    self._find_and_set_backward_last_op_per_virtual_layers()
+    for micro_batch_idx in range(self.micro_batch_size):
+      map = self.micro_models[micro_batch_idx].get_backward_last_op_per_virtual_layers()
+      for op in self.graph.get_operations():
+        for virtual_layers_idx in range(self.virtual_layers_size):
+          if self._is_backward_send_op_per_virtual_layers(op, map, virtual_layers_idx):
+            self.set_backward_send_op_per_virtual_layers(op, micro_batch_idx, virtual_layers_idx)
 
 
   def _is_model_first_op(self, op):
@@ -138,57 +179,39 @@ class ModelScheduleHelper:
 
 
 
-  def _find_and_set_model_first_op(self):
-    for op in self.graph.get_operations():
-      if self._is_model_first_op(op):
-        self.set_model_first_op(op)
 
-  def _find_and_set_forward_first_op_per_virtual_layers(self):
-    for op in self.graph.get_operations():
-      if self._is_forward_first_op_per_virtual_layers(op):
-        self.set_forward_first_op_per_virtual_layers(op)
+  # GPIPE Forward Schedule : 4 GPUs / 8 Layer
+  # E[0  1]E[0  1]E[0  1]E[0  1]
+  #        [2  3] [2  3] [2  3] [2  3]
+  #              [4  5] [4  5] [4  5] [4  5]
+  #                    [6  7][EL]...
 
-  def _find_and_set_forward_last_op(self):
-    for op in self.graph.get_operations():
-      if self._is_forward_last_op(op):
-        self.set_forward_last_op(op)
+  # FASTFORWARD Forward Schedule : 4 GPUs / 8 Layer
+  # E[0  1]E[0  1]E[0  1]E[0  1]
+  #        [2  3] [2  3] [2  3] [2  3]
+  #              [4  5] [4  5] [4  5] [4  5]
+  #                    [6  7][EL]...
 
-  def _find_and_set_backward_first_op_per_virtual_layers(self):  
-    for op in self.graph.get_operations():
-      if self._is_backward_first_op_per_virtual_layers(op):
-        self.set_backward_first_op_per_virtual_layers(op)
+  # MODULO Forward Schedule : 4 GPUs / 8 Layer
+  # E[0]E[0]E[0]E[0][4][4][4][4]
+  #     [1] [1] [1] [1][5][5][5][5]
+  #        [2] [2] [2] [2][6][6][6][6]
+  #           [3] [3] [3] [3][7][EL][7][EL]
 
-  def _find_and_set_backward_first_op(self):
-    for op in self.graph.get_operations():
-      if self._is_backward_first_op(op):
-        self.set_backward_first_op(op)
+  def _schedule_forward_process(self):
+    self._schedule_forward_first_virtual_layers()
+    self._schedule_forward_second_virtual_layers()
+    if GPIPE not in self.schedule_type:
+      self._schedule_forward_second_last_virtual_layers()
 
-  def _find_and_set_weight_gradient_ops(self):
-    for op in self.graph.get_operations():
-      if self._is_weight_gradient_ops(op):
-        self.set_weight_gradient_ops(op)
+  def _schedule_race_condition(self):
+    self._schedule_micro_batch_race_condition()
+    if MODULO in self.schedule_type:
+      self._schedule_virtual_layers_race_condition()
 
-  def _find_and_set_output_gradient_ops(self):
-    for op in self.graph.get_operations():
-      if self._is_output_gradient_ops(op):
-        self.set_output_gradient_ops(op)
-
-  def _find_and_set_backward_last_op_per_virtual_layers(self):
-    self._find_and_set_output_gradient_ops()
-    for micro_batch_idx in range(self.micro_batch_size):
-      map = self.micro_models[micro_batch_idx].get_output_gradient_ops()
-      for virtual_layers_idx in range(self.virtual_layers_size):
-        op = map[virtual_layers_idx][-1]
-        self.set_backward_last_op_per_virtual_layers(op, micro_batch_idx, virtual_layers_idx)
-
-  def _find_and_set_backward_send_op_per_virtual_layers(self):
-    self._find_and_set_backward_last_op_per_virtual_layers()
-    for micro_batch_idx in range(self.micro_batch_size):
-      map = self.micro_models[micro_batch_idx].get_backward_last_op_per_virtual_layers()
-      for op in self.graph.get_operations():
-        for virtual_layers_idx in range(self.virtual_layers_size):
-          if self._is_backward_send_op_per_virtual_layers(op, map, virtual_layers_idx):
-            self.set_backward_send_op_per_virtual_layers(op, micro_batch_idx, virtual_layers_idx)
+  def _schedule_backward_process(self):
+    self._schedule_ooo_backpropagation()
+    self._schedule_race_condition()
 
 
   def _schedule_forward_first_virtual_layers(self):
@@ -209,28 +232,39 @@ class ModelScheduleHelper:
     set_dependency_util( forward_last_op_per_virtual_layers[self.virtual_layers_size-2].op, 
                               backward_first_op_per_virtual_layers[self.virtual_layers_size-2])
 
+  # F F F F     B B B B
+  #   F F F F B B B B
   def _schedule_gpipe_last_stage(self):
     forward_last_op = self.micro_models[self.micro_batch_size-1].get_forward_last_op()
+    # For last GPU, delay all backpropagation until all forward is done
     for micro_batch_idx in range(self.micro_batch_size):
       backward_first_op = self.micro_models[micro_batch_idx].get_backward_first_op()
       set_dependency_util( forward_last_op, backward_first_op )
 
+    # Let backpropagation microbatch process sequentially
     for micro_batch_idx in range(self.micro_batch_size-1):
       backward_stage_last_ops = self.micro_models[micro_batch_idx].get_backward_send_op_per_virtual_layers()
-      backward_stage_last_op = backward_stage_last_ops[self.virtual_layers_size-1]
-      backward_last_stage_first_op = self.micro_models[micro_batch_idx+1].get_backward_first_op()
-      set_dependency_util( backward_stage_last_op, backward_last_stage_first_op )
+      current_backward_last_op = backward_stage_last_ops[self.virtual_layers_size-1]
+      next_backward_first_op = self.micro_models[micro_batch_idx+1].get_backward_first_op()
+      set_dependency_util( current_backward_last_op, next_backward_first_op )
     
+#           [0,0](4,0)[1,0]     [2,0] # micro_batch_idx = 0, virtual_layer_idx = 0, cap = 4
+#      [0,1]     [1,1](4,1)[2,1]      # micro_batch_idx = 0, virtual_layer_idx = 1, cap = 4
+# [0,2]     [1,2]     [2,2](4,2)      # micro_batch_idx = 0, virtual_layer_idx = 2, cap = 4
 
   def _schedule_microbatch_cap_fastforward(self):
     for micro_batch_idx in range(self.remainder_micro_batch):
       for virtual_layer_idx in range(self.virtual_layers_size-1):
+        #weight_grad_map = 하나의 마이크로배치에 대한 전체 wgrad
+        #weight_grad_map[virtual_layer] = 해당 virtual layer의 wgrad들.
         weight_grad_map = self.micro_models[micro_batch_idx+virtual_layer_idx].get_weight_gradient_ops()
         weight_grad_ops = weight_grad_map[virtual_layer_idx]
+
         if virtual_layer_idx is 0:
-          first_forward_op = self.micro_models[self.micro_batch_cap+micro_batch_idx].get_model_first_op()
+          #not_remainder wgrad
+          first_forward_op = self.micro_models[self.micro_batch_cap + micro_batch_idx].get_model_first_op()
         else :
-          first_forward_ops = self.micro_models[self.micro_batch_cap+micro_batch_idx].get_forward_first_op_per_virtual_layers()
+          first_forward_ops = self.micro_models[self.micro_batch_cap + micro_batch_idx].get_forward_first_op_per_virtual_layers()
           first_forward_op = first_forward_ops[virtual_layer_idx]
         
         for weight_gradient_op in weight_grad_ops:
@@ -272,6 +306,8 @@ class ModelScheduleHelper:
           set_dependency_util(send_grad_op, weight_grad_op)
 
 
+
+  # TODO might be better if there is a forward race condition
 
   def _schedule_micro_batch_race_condition(self):
     for micro_batch_idx in range(self.micro_batch_size-1):

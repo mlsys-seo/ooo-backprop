@@ -78,7 +78,6 @@ GpuExecutable::GpuExecutable(
   GpuDebugInfoManager::Get()->RegisterModule(module().name(), shared_module(),
                                              assignment_);
 
-  // JY
   HloComputation* entry_computation = hlo_module_->entry_computation();
   for (HloInstruction* hlo : entry_computation->instructions()) {
     std::string hlo_name = hlo->name();
@@ -89,14 +88,12 @@ GpuExecutable::GpuExecutable(
     }
   }
 
-  // JY
   const char* cstr_do_ooo_backprop = std::getenv("DO_OOO_BACKPROP");
   std::string str_do_ooo_backprop(cstr_do_ooo_backprop ? cstr_do_ooo_backprop : "");
   if (!str_do_ooo_backprop.empty()) {
     do_ooo_backprop_ = true;
   }
 
-  // JY
   if (do_ooo_backprop_) {
     const char* cstr_capture_iter = std::getenv("OOO_CAPTURE_ITER");
     std::string str_capture_iter(cstr_capture_iter ? cstr_capture_iter : "");
@@ -205,7 +202,6 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
   std::vector<std::function<void()>> deferred_host_callbacks;
 
   // Start capturing forward graph
-  std::cout << "[JY] Start capturing entire graph..." << std::endl;
   if (sub_stream != nullptr) {
     cudaEvent_t* fork_substream_event = new cudaEvent_t;
     cudaError_t event_create_status = cudaEventCreate(fork_substream_event);
@@ -227,18 +223,14 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
     int32 stream_no = thunk_schedule_->StreamNumberForThunk(thunk);
     se::Stream* stream = (stream_no == 0 ? main_stream : sub_stream);
 
-    // JY
     std::string op_name = thunk_schedule_->GetThunkOpName(thunk);
     std::string hlo_name = thunk_schedule_->GetThunkHloName(thunk);
-    std::cout << "op name : " << op_name << ", hlo name : " << hlo_name << ", stream no : " << stream_no << std::endl;
 
     if (op_name.find("DummyConv2DBackpropFilter") != std::string::npos) {
       break;  
     }
 
     for (const Thunk* dependency : thunk_schedule_->DependsOn(thunk)) {
-      std::cout << "  depends on - op name : " << thunk_schedule_->GetThunkOpName(dependency) 
-                << ", hlo name : " << thunk_schedule_->GetThunkHloName(dependency) << std::endl;
       stream->ThenWaitFor(FindOrDie(thunk_to_finish_event, dependency).get());
     }
 
@@ -262,8 +254,6 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
     TF_RETURN_IF_ERROR(thunk->ExecuteOnStream(thunk_params));
 
     if (thunk_schedule_->Depended(thunk)) {
-      std::cout << "  Some thunk is depended on this thunk #########" << std::endl;
-
       auto finish_event = absl::make_unique<se::Event>(main_stream->parent());
       finish_event->Init();
       stream->ThenRecordEvent(finish_event.get());
@@ -271,16 +261,13 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
     }
   }
 
-  // JY
   if (sub_stream != nullptr) {
     cudaEvent_t* join_stream_event = new cudaEvent_t;
     cudaError_t event_create_status = cudaEventCreate(join_stream_event);
     CHECK_EQ(event_create_status, cudaSuccess);
 
-    std::cout << "[JY] This sync is for capturing just multi-stream cuda graph" << std::endl;
     cudaError_t event_record_status = cudaEventRecord(*join_stream_event, se::gpu::AsGpuStreamValue(sub_stream));
     CHECK_EQ(event_record_status, cudaSuccess);
-    std::cout << "[JUN] wait event..\n";
     cudaError_t event_wait_status = cudaStreamWaitEvent(se::gpu::AsGpuStreamValue(main_stream), *join_stream_event, 0);
     CHECK_EQ(event_wait_status, cudaSuccess);
   }
@@ -628,27 +615,6 @@ static bool EntireTupleContentsAliased(
   return all_aliased;
 }
 
-// JY
-void print_slices(ConvolutionThunk* thunk) {
-  for (const auto& buffer : thunk->operand_buffers_) {
-    std::cout << "[JUN] operand slice  idx : " << buffer.index()
-      << " offset : " << buffer.offset() << " size : " << buffer.size() << std::endl;
-  }
-
-  BufferAllocation::Slice conv_result_slice = thunk->result_buffer_;
-  std::cout << "[JUN] result slice idx : " << conv_result_slice.index()
-    << " offset : " << conv_result_slice.offset() << " size : " << conv_result_slice.size() << std::endl;
-
-  BufferAllocation::Slice scratch_slice = thunk->scratch_buffer_;
-  std::cout << "[JUN] scratch_slice idx : " << scratch_slice.index()
-    << " offset : " << scratch_slice.offset() << " size : " << scratch_slice.size() << std::endl;
-
-  BufferAllocation::Slice tuple_result_slice = thunk->tuple_result_buffer_;
-  std::cout << "[JUN] tuple slice idx : " << tuple_result_slice.index()
-    << " offset : " << tuple_result_slice.offset() << " size : " << tuple_result_slice.size() << std::endl;
-}
-
-// JY
 std::vector<std::string> StringSplit(std::string input, char delimiter) {
   std::vector<std::string> ret;
   std::stringstream ss(input);
@@ -661,10 +627,7 @@ std::vector<std::string> StringSplit(std::string input, char delimiter) {
   return ret;
 }
 
-// JY
 void GpuExecutable::RewireWeightGradInputs() {
-  std::cout << "########### GpuExecutable::RewireWeightGradInputs ###########" << std::endl;
-  
   for (Thunk* thunk : thunk_schedule_->TotalOrder()) {
     std::string op_name = thunk_schedule_->GetThunkOpName(thunk);
     std::string hlo_name = thunk_schedule_->GetThunkHloName(thunk);
@@ -681,10 +644,8 @@ void GpuExecutable::RewireWeightGradInputs() {
     if (op_name.find("gradients") != std::string::npos &&
         op_name.find("Dummy") == std::string::npos &&
         op_name.find("Conv2DBackpropFilter") != std::string::npos) {
-      std::cout << "[JY] Wgrad op " << op_name << " is found!" << std::endl;
 
       ConvolutionThunk* target_wgrad_op = (ConvolutionThunk*)thunk;
-      print_slices(target_wgrad_op);
 
       int target_wgrad_layer_id = -1;
       std::vector<std::string> op_name_tokens = StringSplit(op_name, '/');
@@ -710,9 +671,7 @@ void GpuExecutable::RewireWeightGradInputs() {
         if (op_name.find("gradients") != std::string::npos &&
             op_name.find("DummyConv2DBackpropFilter") != std::string::npos &&
             op_name.find(origin_wgrad_op_layer_name) != std::string::npos) {
-          std::cout << "[JY] original wgrad op " << op_name << " is found!" << std::endl;
           origin_wgrad_op = (ConvolutionThunk*)thunk;
-          print_slices(origin_wgrad_op);
         }
       }
 
@@ -720,11 +679,8 @@ void GpuExecutable::RewireWeightGradInputs() {
       std::vector<BufferAllocation::Slice> new_wgrad_input_buffers;
       new_wgrad_input_buffers.push_back(origin_wgrad_op->operand_buffers_[0]);
       new_wgrad_input_buffers.push_back(origin_wgrad_op->operand_buffers_[1]);
-      // new_wgrad_input_buffers.push_back(target_wgrad_op->operand_buffers_[2]);
 
-      std::cout << "[JY] target weight grad op's inputs are changed..." << std::endl;
       target_wgrad_op->operand_buffers_ = new_wgrad_input_buffers;
-      print_slices(target_wgrad_op);
     }
   }
 }
@@ -859,7 +815,6 @@ StatusOr<ExecutionOutput> GpuExecutable::ExecuteAsyncOnStream(
     TF_RETURN_IF_ERROR(thunk->Initialize(*this, executor));
   }
 
-  // JY
   if (do_ooo_backprop_) {
     if (is_main_executable_) {
       execution_count_++;

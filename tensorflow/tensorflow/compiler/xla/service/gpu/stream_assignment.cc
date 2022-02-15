@@ -79,8 +79,6 @@ void StreamAssignment::AssignStreamToHlo(const HloInstruction* hlo,
   std::string hlo_name = hlo->name();
 
   if (IsDummyOp(hlo)) {
-    std::cout << "SKIP dummy wgrad op " << op_name << ", (hlo name : " << hlo_name << ") is stream 0" << std::endl;
-
     CHECK_GE(stream_num, 0);
     if (stream_num >= stream_count_) {
       stream_count_ = stream_num + 1;
@@ -91,19 +89,12 @@ void StreamAssignment::AssignStreamToHlo(const HloInstruction* hlo,
     return;
   }
 
-  // JUN : Backward operation should be in different stream.
   if (use_sub_stream) {
     if (IsWeightGradOp(hlo)) {
-      std::cerr << "[JUN] op name : " << op_name << ", thunk : " << hlo_name << "(" << hlo << ")" << "\n";
-      std::cerr << "  set sub stream ########## " << hlo_name << "\n";
       stream_num = sub_stream_id;
     } else if (IsUpdateOp(hlo)) {
-      std::cerr << "[JUN] op name : " << op_name << ", thunk : " << hlo_name << "(" << hlo << ")" << "\n";
-      std::cerr << "  set sub stream1 ########## " << hlo_name << "\n";
       stream_num = sub_stream_id;
     } else if (IsTupleOp(hlo)) {
-      std::cerr << "[JUN] op name : " << op_name << ", thunk : " << hlo_name << "(" << hlo << ")" << "\n";
-      std::cerr << "  set sub stream2 ########## " << hlo_name << "\n";
       stream_num = sub_stream_id;
     }
   }
@@ -197,7 +188,6 @@ int ComputeStreamToAssign(
 }  // namespace
 
 std::unique_ptr<StreamAssignment> AssignStreams(const HloModule& module) {
-  // JY
   bool do_ooo_backprop = false;
   bool use_sub_stream = false;
 
@@ -211,7 +201,6 @@ std::unique_ptr<StreamAssignment> AssignStreams(const HloModule& module) {
     const char* cstr_use_sub_stream = std::getenv("OOO_USE_SUB_STREAM");
     std::string str_use_sub_stream(cstr_use_sub_stream ? cstr_use_sub_stream : "");
     if (!str_use_sub_stream.empty()) {
-      std::cout << "use sub stream!!!" << std::endl;
       use_sub_stream = true;
     }
   }

@@ -335,10 +335,8 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
   // TODO make it to a function.  find_???_ops
   for (auto* hlo : computation->instructions()) {
     if (IsForwardOp(*hlo)) {
-      std::cout << "forward op name : " << hlo->metadata().op_name() << " hlo name : " << hlo->name() << std::endl;
       fwd_ops.push_back(hlo);  
     } else if (OverlapForward(*hlo)) {
-      std::cout << "forward overlap wgrad op name : " << hlo->metadata().op_name() << " hlo name : " << hlo->name() << std::endl;
       int target_forward_id = GetOverlapTargetLayerId(*hlo);
       auto it = fwd_overlap_wgrad_ops.find(target_forward_id);
       if (it == fwd_overlap_wgrad_ops.end()) {
@@ -347,9 +345,6 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
       }
       fwd_overlap_wgrad_ops[target_forward_id].push_back(hlo);
     } else if (IsDummyForOverlapForward(*hlo)) {
-      std::cout << "forward overlap dummy wgrad op name : " << hlo->metadata().op_name() << " hlo name : " << hlo->name() << std::endl;
-      std::cout << "  RemoveUser - hlo name : " << hlo->users()[0]->name() << " -/-> hlo name : " << hlo->users()[0]->users()[0]->name() << std::endl;
-
       HloInstruction* dummy_op = hlo->users()[0];
       HloInstruction* update_op = hlo->users()[0]->users()[0];
       dummy_op->RemoveUser(update_op);
@@ -357,7 +352,6 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
 
       dummy_ops.push_back(hlo);
     } else if (OverlapOutputGrad(*hlo)) {
-      std::cout << "outgrad overlap dummy wgrad op name : " << hlo->metadata().op_name() << " hlo name : " << hlo->name() << std::endl;
       int target_output_grad_id = 0;
       std::string op_name = hlo->metadata().op_name();
       if (op_name.find("Depthwise") != std::string::npos) {
@@ -381,7 +375,6 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
     queue.pop_front();
 
     if (IsNormalOp(*x)) {
-      std::cout << "normal op name : " << x->metadata().op_name() << " hlo name : " << x->name() << std::endl;
       launch_order->push_back(x);
       PropagateNextNodes(x);
     }
@@ -392,15 +385,10 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
         launch_order->push_back(wgrad_op);
         PropagateNextNodes(wgrad_op);
 
-        std::cout << "  AppendOperand - op name : " << x->metadata().op_name() << " hlo name : " << x->name()
-                  << " -> op name : " << wgrad_op->metadata().op_name() << " hlo name : " << wgrad_op->name() << std::endl;
         wgrad_op->AppendOperand(x);
         incoming_edge_count[wgrad_op] += 1;
 
         int wgrad_layer_id = GetLayerId(*wgrad_op)-1;
-        std::cout << "layer id : " << layer_id << ", wgrad layer id : " << wgrad_layer_id+1 << std::endl;
-        std::cout << "  AppendOperand - op name : " << wgrad_op->metadata().op_name() << " hlo name : " << wgrad_op->name() 
-                  << " -> op name : " << fwd_ops[wgrad_layer_id]->metadata().op_name() << " hlo name : " << fwd_ops[wgrad_layer_id]->name() << std::endl;
         HloInstruction* update_op = wgrad_op->users()[0]->users()[0];
         fwd_ops[wgrad_layer_id]->AppendOperand(update_op);
         incoming_edge_count[fwd_ops[wgrad_layer_id]] += 1;
@@ -445,16 +433,10 @@ StatusOr<std::unique_ptr<GpuHloSchedule>> GpuHloSchedule::Build(
   // Initialize thunk_launch_order_, the total order of thunk launches.
   HloComputation* entry_computation = module.entry_computation();
   if (do_ooo_backprop) {
-    std::cout << "MakeOOOLaunchOrder is called..." << std::endl;
     MakeOOOLaunchOrder(entry_computation, &schedule->thunk_launch_order_);  
   } else {
     // BFS tends to increase concurrency, but also increases memory usage.
-    std::cout << "BFSLaunchOrder is called..." << std::endl;
     BFSLaunchOrder(entry_computation, &schedule->thunk_launch_order_);
-  }
-
-  for (const auto* hlo : schedule->thunk_launch_order_) {
-    std::cout << "  op name : " << hlo->metadata().op_name() << " hlo name : " << hlo->name() << std::endl;
   }
 
   schedule->hlo_ordering_ = absl::make_unique<GpuHloOrdering>(

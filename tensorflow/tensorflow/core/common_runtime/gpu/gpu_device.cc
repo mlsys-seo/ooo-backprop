@@ -32,6 +32,7 @@ limitations under the License.
 #include <map>
 #include <tuple>
 #include <vector>
+#include <cassert>
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/common_runtime/device_factory.h"
@@ -430,7 +431,6 @@ Status BaseGPUDevice::Init(const SessionOptions& options) {
 
   executor_ = executor_status.ValueOrDie();
 
-  // JY : Create main stream
   stream_ = StreamGroupFactory::Global().GetOrCreate(
       tf_gpu_id_, 0, executor_, options.config.gpu_options());
   device_context_ =
@@ -441,8 +441,6 @@ Status BaseGPUDevice::Init(const SessionOptions& options) {
                            stream_->host_to_device, stream_->device_to_host,
                            stream_->device_to_device);
 
-  // JY : Create sub stream
-  std::cout << "[JUN]Create sub stream in BaseGPUDevice ########### \n";
   sub_stream_ = StreamGroupFactory::Global().GetOrCreate(
       tf_gpu_id_, 1, executor_, options.config.gpu_options());
   stream_->compute->sub_stream_ = sub_stream_->compute;
@@ -552,11 +550,6 @@ Status BaseGPUDevice::Init(const SessionOptions& options) {
     const char* cstr_capture_iter = std::getenv("OOO_CAPTURE_ITER");
     std::string str_capture_iter(cstr_capture_iter ? cstr_capture_iter : "");
     capture_iter_ = std::stoi(str_capture_iter);
-
-    std::cout << "[JUN] capture op : " << capture_op_name_ << "\n";
-    std::cout << "[JUN] capture idx : " << capture_iter_ << "\n";
-  } else {
-    std::cout << "[JUN] capture envs are not set \n";
   }
 
   return Status::OK();
@@ -570,14 +563,11 @@ string BaseGPUDevice::ComputeOpKernelDebugString(const OpKernel& op_kernel,
 }
 
 void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
-  // JY
   static int iter_num = 0;
   static std::vector<std::tuple<void*, void*, size_t>> overwrite_weight_list;
 
-  // JY
   if (!capture_op_name_.empty() && op_kernel->name() == capture_op_name_) {
     iter_num++;
-    std::cout << "capture op " << capture_op_name_ << " is executed, iter num : " << iter_num << "\n";
   }
 
   // NOTE(tucker): We need to discriminate between Eigen GPU
@@ -614,21 +604,16 @@ void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
                            op_kernel->name() == capture_op_name_ &&
                            iter_num == capture_iter_);
 
-  // JY
   if (is_capture_phase) {
-    std::cout << "[JUN] CAPTURE START ########################## \n";
     context->is_capture_ready_ = true;
   }
 
-  // JY
   if (op_kernel->type_string() == "CudaGraphRun") {
     if (stream->graph_ins.size() > 0) {
       for (int i = 0; i < stream->graph_ins.size(); i++) {
-        std::cout << "  graph " << i << " launch start..." << std::endl;
         cudaGraphExec_t* instance = static_cast<cudaGraphExec_t*>(stream->graph_ins[i]);
         cudaError_t err = cudaGraphLaunch(*instance, se::gpu::AsGpuStreamValue(stream));
         CHECK_EQ(err, cudaSuccess);
-        std::cout << "  graph " << i << " launch end..." << std::endl;
       }
 
       // Update weight parameter
@@ -636,13 +621,12 @@ void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
         void* old_weight = std::get<0>(overwrite_weight_tuple);
         void* updated_weight = std::get<1>(overwrite_weight_tuple);
         size_t weight_size = std::get<2>(overwrite_weight_tuple);
-        // std::cout << "  origin : " << old_weight << " new : " << updated_weight << " | size : " << weight_size << std::endl;
         cudaMemcpyAsync(old_weight, updated_weight, sizeof(float) * weight_size, 
                         cudaMemcpyDeviceToDevice, se::gpu::AsGpuStreamValue(stream));
       }
     } else {
-      //  TODO assert
       std::cout << "ERROR: There is no cuda graph" << std::endl;
+      assert(stream->graph_ins.size() > 0);
     }
 
     iter_num++;
@@ -651,7 +635,6 @@ void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
   op_kernel->Compute(context);
 
   if (is_capture_phase) {
-    std::cout << "[JUN] CAPTURE END ########################## \n";
     overwrite_weight_list = context->overwrite_weight_list_;
   }
 

@@ -155,7 +155,6 @@ Status GpuExecutable::CheckCompatibilityWithServiceExecutableRunOptions(
   return Status::OK();
 }
 
-// JY
 Status GpuExecutable::ExecuteThunksAndGraphCapture(
     const ServiceExecutableRunOptions* run_options,
     const BufferAllocations& buffer_allocations, bool block_host_until_done,

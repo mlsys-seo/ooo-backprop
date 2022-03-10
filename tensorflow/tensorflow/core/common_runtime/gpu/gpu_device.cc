@@ -616,6 +616,8 @@ void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
         CHECK_EQ(err, cudaSuccess);
       }
 
+      cudaDeviceSynchronize();
+
       // Update weight parameter
       for (auto& overwrite_weight_tuple : overwrite_weight_list) {
         void* old_weight = std::get<0>(overwrite_weight_tuple);

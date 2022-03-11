@@ -4,19 +4,19 @@ ROOT_DIR=$(dirname $CODE_DIR)
 
 export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64
 
-MODEL_SIZE=$1
+MODEL_SIZE=$1  # e.g. 50, 101 
 BATCH_SIZE=$2
 NUM_TRAINING_STEP=$3
 REVERSE_FIRST_K=$4
-MASTER_HOST=$5
+MASTER_HOST=$5  # Master node IP
 MASTER_PORT=$6
-NODE_HOST=$7
+NODE_HOST=$7    # IP of the current worker
 NUM_WORKER=$8
-NUM_SERVER=$9
-NUM_SERVER_PER_NODE="${10}"
-INDEX="${11}"
-GPU_IDX="${12}"
-DEBUG_PRINT="${13}"
+NUM_SERVER=$9   # Number of parameter servers. e.g. NUM_WORKER/4
+NUM_SERVER_PER_NODE="${10}"  # Number of parameter servers per node (machine).
+INDEX="${11}"                # Worker ID (starting from 0 and incremented by 1).
+GPU_IDX="${12}"              # The GPU index for the worker to use.
+DEBUG_PRINT="${13}"          # 1 or 0
 export DEBUG_C_PRINT="${14}"
 
 export DMLC_ROLE=worker

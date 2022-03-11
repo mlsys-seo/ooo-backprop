@@ -695,7 +695,7 @@ std::vector<std::string> StringSplit(std::string input, char delimiter) {
   return ret;
 }
 
-void GpuExecutable::SaveAndCopyWgradInputData( const BufferAllocations& buffer_allocations ) {
+void GpuExecutable::RewireWeightGradInputs( const BufferAllocations& buffer_allocations ) {
   for (Thunk* thunk : thunk_schedule_->TotalOrder()) {
     std::string op_name = thunk_schedule_->GetThunkOpName(thunk);
     std::string hlo_name = thunk_schedule_->GetThunkHloName(thunk);
@@ -934,7 +934,7 @@ StatusOr<ExecutionOutput> GpuExecutable::ExecuteAsyncOnStream(
                                        block_host_until_done,
                                        hlo_execution_profile));
     } else {
-      SaveAndCopyWgradInputData(buffer_allocations);
+      RewireWeightGradInputs(buffer_allocations);
       TF_RETURN_IF_ERROR(ExecuteThunksAndGraphCapture(run_options, buffer_allocations,
                                                       block_host_until_done,
                                                       hlo_execution_profile));

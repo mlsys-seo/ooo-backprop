@@ -114,7 +114,7 @@ class GpuExecutable : public Executable {
                                       bool block_host_until_done,
                                       HloExecutionProfile* hlo_execution_profile);
 
-  void SaveAndCopyWgradInputData( const BufferAllocations& buffer_allocations );
+  void RewireWeightGradInputs( const BufferAllocations& buffer_allocations );
 
   // Returns the value set of the root instruction of the entry
   // computation. Uses dataflow analysis from buffer assignment.

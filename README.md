@@ -47,3 +47,22 @@ OOO BackProp is evaluated with twelve neural network and five public datasets. T
 
 ![datap](https://user-images.githubusercontent.com/78071764/151532987-d56e3311-407d-406e-b389-ab811267eda9.png)
 
+## Install Guide
+
+### Our Tensorflow Install Guide
+```bash
+git clone https://github.com/mlsys-seo/ooo-backprop.git
+cd tensorflow
+./configure
+./build.sh
+./install.sh
+```
+If you want to get more information about installation, please go to [Tensorflow](https://www.tensorflow.org/install/source?hl=ko)
+
+### Our BytePS Install Guide
+```bash
+git clone https://github.com/mlsys-seo/ooo-backprop.git
+cd byteps
+python3 setup.py install
+```
+If you want to get more information about installation, please go to [BytePS repository](https://github.com/bytedance/byteps)

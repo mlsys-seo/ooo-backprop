@@ -65,8 +65,11 @@ python3 setup.py install
 ```
 For package dependencies and more detailed installation information, please go to [BytePS repository](https://github.com/bytedance/byteps).
 
+## Training with Your Data Using OOO BackProp
 
-## Repository Location for each set of experiments
+If you want to use the provided code to train with your data, you can replace dummy_X and dummy_Y variables in expr/{single_gpu, data_par, pipe_par}/code/\*.py files. You may need to optimize the code for loading and preparing your data for training to take full advantage of ooo backprop.
+
+## Repository Location for Each Set of Experiments
 To run more experiments (other than our prepared ones), see the following locatons.
 
 - [Single-GPU Training](expr/single_gpu/)

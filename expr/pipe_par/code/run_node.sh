@@ -3,18 +3,19 @@
 CODE_DIR=$(dirname $(realpath $0))
 ROOT_DIR=$(dirname $CODE_DIR)
 
-TASK=${1}
-MODEL=${2}
-PIPELINE_STYLE=${3}
+TASK=${1}   # "finetune" or "pretrain"
+MODEL=${2}  # e.g. "bert_24"  
+PIPELINE_STYLE=${3}  # "gpipe", "fastforward_push", or "modulo" (modulo means that both fastforwarding and modulo allocation are applied)
 NUM_TRAINING_STEP=${4}
-GLOBAL_BATCH_SIZE=${5}
-MICRO_BATCH_SIZE=${6}
-MODULO_BATCH_SIZE=${7}
-NUM_WORKER_PER_NODE=${8}
+GLOBAL_BATCH_SIZE=${5} # mini-batch size
+MICRO_BATCH_SIZE=${6}  # micro-batch size
+MODULO_BATCH_SIZE=${7} # The number of transformers to group when applying modulo allocation.
+                       # It is 1 for NVLink/PCIe interconnect and 2 or higher for 10Gb Ethernet interconnect. 
+NUM_WORKER_PER_NODE=${8} # The number of GPUs per node
 NUM_NODE=${9}
-MASTER_HOST="${10}"
-WORKER_HOST_STRING="${11}"
-NODE_IDX="${12}"
+MASTER_HOST="${10}"  # Master IP
+WORKER_HOST_STRING="${11}"  # IP of the current worker
+NODE_IDX="${12}"     # Worker ID starting from zero and incremented by one.
 
 
 INPUT_DATA=$ROOT_DIR/data/tf_examples.tfrecord

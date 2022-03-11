@@ -65,9 +65,21 @@ python3 setup.py install
 ```
 For package dependencies and more detailed installation information, please go to [BytePS repository](https://github.com/bytedance/byteps).
 
+## Running Scripts with Compiled TF/BytePS
+
+Rather than using the script files in scripts/{single\_gpu, data\_par, pipe\_par}/\*.sh to run the experiments, 
+you need to use the scripts in the following.
+
+* Single-GPU Traing Expr: expr/single\_gpu/scripts/run_\*.sh
+* Data-Parallel Training Expr: expr/data\_par/code/run\_node\_resnet.sh
+* Pipeline-Parallel Training Expr: expr/pipe\_par/code/run\_node.sh
+
+To run the scripts, you need to pass arguments to the above scripts; the arguemnts are described at the beginning of the scripts.
+
+
 ## Training with Your Data Using OOO BackProp
 
-If you want to use the provided code to train with your data, you can replace dummy_X and dummy_Y variables in expr/{single_gpu, data_par, pipe_par}/code/\*.py files. You may need to optimize the code for loading and preparing your data for training to take full advantage of ooo backprop.
+If you want to use the provided code to train with your data, you can replace dummy_X and dummy_Y variables in expr/{single_gpu, data_par, pipe_par}/code/\*.py to be placeholders of your loaded data. You may need to optimize the code for loading and preparing your data for training to take full advantage of ooo backprop.
 
 ## Repository Location for Each Set of Experiments
 To run more experiments (other than our prepared ones), see the following locatons.

@@ -9,40 +9,40 @@ The source code modification in TensorFlow XLA is for multi-stream out-of-order 
 
 ### A. Stream allocation
 
- * Source code: tensorflow/tensorflow/compiler/xla/service/gpu/stream_assignment.cc (line: 81–100)
+ * Source code: tensorflow/tensorflow/compiler/xla/service/gpu/stream_assignment.cc (line: 81–96)
 
-* Github link: [stream_assignment.cc](https://github.com/mlsys-seo/ooo-backprop/blob/4a6932a87837a1a825f511889800e1f941be08d2/tensorflow/tensorflow/compiler/xla/service/gpu/stream_assignment.cc#L81)
+* Github link: [stream_assignment.cc](https://github.com/mlsys-seo/ooo-backprop/blob/b5a535559267db1527bd7b413195d22d6faed3a6/tensorflow/tensorflow/compiler/xla/service/gpu/stream_assignment.cc#L81)
 
 We modified the function AssignStreamToHlo() to assign the streams to kernels as they are annotated in our Python-level scheduler, the results of which are in {densenet,mobilenet_v3}_schedule_map.py.
 
 
 
 ### B. Enforcing the kernel schedule for main- and sub-streams
-* Source code: tensorflow/tensorflow/compiler/xla/service/gpu/gpu_hlo_schedule.cc (line: 435–440)
+* Source code: tensorflow/tensorflow/compiler/xla/service/gpu/gpu_hlo_schedule.cc (line: 470–472)
 
-* Github link: [gpu_hlo_schedule.cc](https://github.com/mlsys-seo/ooo-backprop/blob/4a6932a87837a1a825f511889800e1f941be08d2/tensorflow/tensorflow/compiler/xla/service/gpu/gpu_hlo_schedule.cc#L435)
+* Github link: [gpu_hlo_schedule.cc](https://github.com/mlsys-seo/ooo-backprop/blob/b5a535559267db1527bd7b413195d22d6faed3a6/tensorflow/tensorflow/compiler/xla/service/gpu/gpu_hlo_schedule.cc#L471)
 
-We modified the function GpuHloSchedule::Build() to invoke our implemented function MakeOOOLaunchOrder(), which is in line 298. The function enforces the execution schedule for the kernels in main-stream and sub-stream. Note that the kernel scheduling is already determined and stored in {densenet,mobilenet_v3}_schedule_map.py and here we simply enforce the determined schedule.
+We modified the function GpuHloSchedule::Build() to invoke our implemented function MakeOOOLaunchOrder(), which is in line 308. The function enforces the execution schedule for the kernels in main-stream and sub-stream. Note that the kernel scheduling is already determined and stored in {densenet,mobilenet_v3}_schedule_map.py and here we simply enforce the determined schedule.
 
 
 
 
 ### C. CUDA Graph Capturing
-* Source code: tensorflow/tensorflow/compiler/xla/service/gpu/gpu_executable.cc (line: 817–836)
+* Source code: tensorflow/tensorflow/compiler/xla/service/gpu/gpu_executable.cc (line: 927–947)
 
-* Github link: [gpu_executable.cc](https://github.com/mlsys-seo/ooo-backprop/blob/17de9d83176d54abebd8da597ef169524dfa281b/tensorflow/tensorflow/compiler/xla/service/gpu/gpu_executable.cc#L817)
+* Github link: [gpu_executable.cc](https://github.com/mlsys-seo/ooo-backprop/blob/9297229f2d8ef1ebf28a507ab38d16e28639f32d/tensorflow/tensorflow/compiler/xla/service/gpu/gpu_executable.cc#L927)
 
 
-We modified the function GpuExecutable::ExecuteAsyncOnStream() to invoke our implemented functions, i.e., RewireWeightGradInputs() and ExecuteThunksAndGraphCapture(). The function ExecuteThunksAndGraphCapture() (in line 158) is modified from the function ExecuteThunks() (in line 317) and it has the code for CUDA graph capturing (line 214, 274–280). 
+We modified the function GpuExecutable::ExecuteAsyncOnStream() to invoke our implemented functions, i.e., RewireWeightGradInputs() and ExecuteThunksAndGraphCapture(). The function ExecuteThunksAndGraphCapture() (in line 161) is modified from the function ExecuteThunks() (in line 379) and it has the code for CUDA graph capturing (line 220, 323–342). 
 
-The function RewireWeightGradInputs() (in line 629) is applied if a weight gradient computation is scheduled to overlap with a forward computation in the next iteration. Because XLA performs the scheduling within a single iteration, if we delay a weight grad computation to the next iteration, its memory allocation logic (for multi-stream) does not work. To re-use the existing memory allocation logic, we implemented a work-around in RewireWeightGradInputs(), which copies a dummy weight grad computation, delays it to the next iteration, and rewires the input (in the previous iteration) to the overlapping weight grad computation. Note that most of the scheduling enforcement (that does not require scheduling kernels across iterations) is done in **B** above.
+The function RewireWeightGradInputs() (in line 698) is applied if a weight gradient computation is scheduled to overlap with a forward computation in the next iteration. Because XLA performs the scheduling within a single iteration, if we delay a weight grad computation to the next iteration, its memory allocation logic (for multi-stream) does not work. To re-use the existing memory allocation logic, we implemented a work-around in RewireWeightGradInputs(), which clones the original weight grad computation, delays the clone to the next iteration, and copies the input (captured in the original weight grad computation in the previous iteration) to the clone running concurrently with the forward computations. Because the clone is actually scheduled with the forward computation (of the next iteration), XLA correctly allocates its memory block which should not overlap with the memory area used by the forward computation. Then because we copy the actual input captured in the previous iteration, the clone computes the correct weight gradients. Note that most of the scheduling enforcement (that does not require scheduling kernels across iterations) is done in **B** above.
 
 
 
 ### D. Executing the captured CUDA Graph
 * Source code: tensorflow/tensorflow/core/common_runtime/gpu/gpu_device.cc (line: 611–633)
 
-* GIthub link: [gpu_device.cc](https://github.com/mlsys-seo/ooo-backprop/blob/17de9d83176d54abebd8da597ef169524dfa281b/tensorflow/tensorflow/core/common_runtime/gpu/gpu_device.cc#L611)
+* GIthub link: [gpu_device.cc](https://github.com/mlsys-seo/ooo-backprop/blob/9297229f2d8ef1ebf28a507ab38d16e28639f32d/tensorflow/tensorflow/core/common_runtime/gpu/gpu_device.cc#L631)
 
 We modified the function BaseGPUDevice::Compute() to execute the CUDA Graph if the kernel is our custom kernel representing the captured CUDA Graph.
 

@@ -25,7 +25,11 @@ Repository Structure:
 
 ## Install Guide
 
-### Our Tensorflow Install Guide
+### Tensorflow Install Guide
+### Prerequisites
+- Bazel 3.1.0
+- CUDA 11.0
+- cuDNN 8.0.4
 ```bash
 git clone https://github.com/mlsys-seo/ooo-backprop.git
 cd tensorflow
@@ -33,15 +37,15 @@ cd tensorflow
 ./build.sh
 ./install.sh
 ```
-If you want to get more information about installation, please go to [Tensorflow](https://www.tensorflow.org/install/source?hl=ko)
+If you want to get more information about installation, please go to [Tensorflow](https://www.tensorflow.org/install/source?hl=ko).
 
-### Our BytePS Install Guide
+### BytePS Install Guide
 ```bash
 git clone https://github.com/mlsys-seo/ooo-backprop.git
 cd byteps
 python3 setup.py install
 ```
-If you want to get more information about installation, please go to [BytePS repository](https://github.com/bytedance/byteps)
+If you want to get more information about installation, please go to [BytePS repository](https://github.com/bytedance/byteps).
 
 
 ## Repository Location for each set of experiments

@@ -235,17 +235,17 @@ if __name__ == "__main__":
             tf.random.normal([BATCH, 224, 224, 3]), name="input_data", dtype="float"
         )
     )
-    dummy_Y = tf.random.uniform(
-        [BATCH], minval=0, maxval=num_classes - 1, dtype=tf.int32, name="label_data"
+    dummy_Y = tf.stop_gradient(
+        tf.Variable(
+            tf.random.normal([BATCH, num_classes]), name="lable", dtype="float"
+        )
     )
 
     logits = MobileNetV3(dummy_X, num_classes, layers, multiplier=ALPHA, reduction_ratio=4).model
     optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=0.1)
 
     cost = tf.reduce_mean(
-        input_tensor=tf.nn.sparse_softmax_cross_entropy_with_logits(
-            labels=dummy_Y, logits=logits
-        )
+        input_tensor = tf.compat.v1.losses.softmax_cross_entropy( dummy_Y, logits )
     )
 
     gvs = optimizer.compute_gradients(cost, tf.compat.v1.trainable_variables())

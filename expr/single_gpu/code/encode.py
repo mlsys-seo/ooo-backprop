@@ -1,4 +1,5 @@
 import sys
+import os
 
 
 def check_right_schedule(layer_num, colocated_layer_num):
@@ -10,6 +11,10 @@ def check_right_schedule(layer_num, colocated_layer_num):
 def encode_sched_map_into_name(layer_name, curr_layer_num=-1, w_grad_sched_map=None):
     assert curr_layer_num > -1
     assert w_grad_sched_map != None
+
+    ooo_backprop = os.environ.get("DO_OOO_BACKPROP")
+    if( ooo_backprop == None ):
+        return layer_name
 
     current_schedule = w_grad_sched_map[curr_layer_num]
     colocation_method = current_schedule[0]

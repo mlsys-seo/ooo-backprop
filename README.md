@@ -20,12 +20,17 @@ Repository Structure:
 ```Modifications.md``` The descriptions of our code modifications to implement ooo backprop in TensorFlow. 
 
 ## Quickstart
+You can simply run the experiments in our prepared Docker containers by following the instructions in the links below.
+To reproduce the experiments in the same environment in our paper, you need to setup the AWS instances as described in the following link.
+
 - [about AWS setup](AWS-doc)
 - [Prepared Scripts for Single-GPU Training](scripts/single_gpu/)
 - [Prepared Scripts for Pipeline-Parallel Training](scripts/pipe_par/)
 - [Prepared Scripts for Data-Parallel Training](scripts/data_par/)
 
 ## Install Guide
+If you want to run the experiments in our prepared Docker containers, follow the links in Quickstart above.
+If you prefer to run the experiments in your own Linux machine, you need to compile TensorFlow and BytePS as following.
 
 ### Tensorflow Install Guide
 ### Prerequisites

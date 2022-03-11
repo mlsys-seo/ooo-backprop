@@ -19,11 +19,13 @@ do
             export DO_OOO_BACKPROP="true"
             export OOO_CAPTURE_OP="cluster_1_1/xla_run"
             export OOO_CAPTURE_ITER=2
+            export OOO_NUM_BLOCK_OVERLAP_FORWARD=0
             export OOO_USE_SUB_STREAM="true"
             python /workspace/correctness_test/code/mobile_ooo.py ${BATCH} ${ALPHA} ${ITER}
             unset DO_OOO_BACKPROP
             unset OOO_CAPTURE_OP
             unset OOO_CAPTURE_ITER
+            unset OOO_NUM_BLOCK_OVERLAP_FORWARD
             unset OOO_USE_SUB_STREAM
 
 	    python /workspace/correctness_test/code/logit_diff.py

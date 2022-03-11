@@ -17,6 +17,8 @@ Repository Structure:
 
 ```scripts/``` Bash scripts for running all the experiments.
 
+```Modifications.md``` The descriptions of our code modifications to implement ooo backprop in TensorFlow. 
+
 ## Quickstart
 - [about AWS setup](AWS-doc)
 - [Prepared Scripts for Single-GPU Training](scripts/single_gpu/)

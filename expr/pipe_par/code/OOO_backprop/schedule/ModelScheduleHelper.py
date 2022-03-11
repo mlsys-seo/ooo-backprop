@@ -255,8 +255,6 @@ class ModelScheduleHelper:
   def _schedule_microbatch_cap_fastforward(self):
     for micro_batch_idx in range(self.remainder_micro_batch):
       for virtual_layer_idx in range(self.virtual_layers_size-1):
-        #weight_grad_map = 하나의 마이크로배치에 대한 전체 wgrad
-        #weight_grad_map[virtual_layer] = 해당 virtual layer의 wgrad들.
         weight_grad_map = self.micro_models[micro_batch_idx+virtual_layer_idx].get_weight_gradient_ops()
         weight_grad_ops = weight_grad_map[virtual_layer_idx]
 

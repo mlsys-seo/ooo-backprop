@@ -176,12 +176,14 @@ class OOO_ScheduleHelper:
         if args.debug_print:
             print("====== END ASYNC APPLY TO FORWARD OP ======")
     
+    # reversely scheduling the first k weight gradient computations in the computation graph.
     def _reverse_k_schedule(self, graph):
         if args.debug_print:
             print("\n\n============ REVERSE OP for K ============")
 
         conv_weight_grads = {}
-        for op in graph.get_operations():
+        # Find the k weight gradient computations and store them in conv_weight_grads
+        for op in graph.get_operations(): 
             if is_send_recv_op(op):
                 continue
             if is_async_op(op) is not True:
@@ -192,6 +194,7 @@ class OOO_ScheduleHelper:
 
         grads_data = conv_weight_grads
         size = len(grads_data) - 1
+        # Add control dependencies to enforce the reversed execution schedule for the k weight gradient computations.
         for wop_index in grads_data:
             if wop_index == size:
                 continue

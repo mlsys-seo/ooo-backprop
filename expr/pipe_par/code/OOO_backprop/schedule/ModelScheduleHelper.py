@@ -274,9 +274,15 @@ class ModelScheduleHelper:
       weight_grad_map = self.micro_models[micro_batch_idx].get_weight_gradient_ops()
       backward_send_ops = self.micro_models[micro_batch_idx].get_backward_send_op_per_virtual_layers()
 
+      # Virtual layer is the unit we apply modulo allocation.
+      # Usually virtual layer maps to a single transformer, but it can map to multiple transformers.
       if self.virtual_layers_size is self.gpu_size:
         for virtual_layers_idx in range(self.virtual_layers_size):
-          if (virtual_layers_idx+1) % self.gpu_size:
+          # Schedule send-op (of the final output grad of the current transformer) to overlap with
+          # all the weight grad computations in the transformer.
+          # Because all output grads in the transformer have dependency on the send-op, 
+          # adding these dependencies also enforces gradient fast-forwarding (i.e., scheduling output grads before weight grads).
+          if (virtual_layers_idx+1) % self.gpu_size:  
             weight_grad_ops = weight_grad_map[virtual_layers_idx]
             send_grad_op = backward_send_ops[virtual_layers_idx]
             for weight_grad_op in weight_grad_ops:

@@ -30,17 +30,19 @@ Repository Structure:
 - Bazel 3.1.0
 
 ```bash
+export WHEEL_DIR=/your/tensorflow/wheel/path/
+
 git clone https://github.com/mlsys-seo/ooo-backprop.git
 cd tensorflow
 
 ./configure
 bazel build --config=opt --config=cuda --strip=never //tensorflow/tools/pip_package:build_pip_package
-bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/tmp
+bazel-bin/tensorflow/tools/pip_package/build_pip_package ${WHEEL_DIR}
 
 # If there is tensorflow already, remove the package and install the newly created package.
 # You need to find out the "Two-Digits" by checking the created directory.
 pip uninstall -y tensorflow
-pip install ~/tmp/tensorflow-2.4.0-cp"Two-Digits"-cp"Two-Digits"m-linux_x86_64.whl
+pip install ${WHEEL_DIR}/tensorflow-2.4.0-cp"Two-Digits"-cp"Two-Digits"m-linux_x86_64.whl
 
 # There may be an issue about protocol buffer package version. Downgrade the package to the version 3.10.0
 pip uninstall -y protobuf

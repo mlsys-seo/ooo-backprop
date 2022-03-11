@@ -144,7 +144,7 @@ class BaseGPUDevice : public LocalDevice {
   mutex scratch_init_mutex_;
   char* scratch_ = nullptr;
   GPUDeviceContext* device_context_;
-  // JY
+
   GPUDeviceContext* sub_stream_device_context_;
   StreamGroup* sub_stream_;
 

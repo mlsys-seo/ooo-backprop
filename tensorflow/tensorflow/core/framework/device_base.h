@@ -153,7 +153,7 @@ class DeviceBase {
     DeviceContext* default_context = nullptr;
     EventMgr* event_mgr = nullptr;
     int gpu_id = -1;
-    // JY
+
     DeviceContext* sub_stream_context = nullptr;
   };
 

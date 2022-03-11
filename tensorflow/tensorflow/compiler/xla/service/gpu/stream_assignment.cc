@@ -89,15 +89,11 @@ void StreamAssignment::AssignStreamToHlo(const HloInstruction* hlo,
     return;
   }
 
-  if (use_sub_stream) {
-    if (IsWeightGradOp(hlo)) {
-      stream_num = sub_stream_id;
-    } else if (IsUpdateOp(hlo)) {
-      stream_num = sub_stream_id;
-    } else if (IsTupleOp(hlo)) {
-      stream_num = sub_stream_id;
-    }
-  }
+	if (use_sub_stream) {
+		if (IsWeightGradOp(hlo) || IsUpdateOp(hlo) || IsTupleOp(hlo)) {
+			stream_num = sub_stream_id;
+		}
+	}
 
   CHECK_GE(stream_num, 0);
   if (stream_num >= stream_count_) {

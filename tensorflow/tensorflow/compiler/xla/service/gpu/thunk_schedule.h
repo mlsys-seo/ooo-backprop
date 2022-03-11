@@ -73,12 +73,10 @@ class ThunkSchedule {
 
   string ToString() const;
 
-  // JY : for executing backward thunk in substream.
   string GetThunkOpName(const Thunk* thunk) const {
     return thunk_to_hlo_.at(thunk)->metadata().op_name();
   }
 
-  // JY : for executing backward thunk in substream.
   string GetThunkHloName(const Thunk* thunk) const {
     return thunk_to_hlo_.at(thunk)->name();
   }

@@ -56,6 +56,7 @@ using ::tensorflow::profiler::ScopedAnnotation;
 
 }  // namespace
 
+
 // Implementation note: HLO profiling is always enabled for GPU executables,
 // since we can use timers around thunks.
 GpuExecutable::GpuExecutable(
@@ -155,6 +156,8 @@ Status GpuExecutable::CheckCompatibilityWithServiceExecutableRunOptions(
   return Status::OK();
 }
 
+
+
 Status GpuExecutable::ExecuteThunksAndGraphCapture(
     const ServiceExecutableRunOptions* run_options,
     const BufferAllocations& buffer_allocations, bool block_host_until_done,
@@ -200,19 +203,24 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
   std::map<const Thunk*, std::unique_ptr<se::Event>> thunk_to_finish_event;
   std::vector<std::function<void()>> deferred_host_callbacks;
 
-  // Start capturing forward graph
-  if (sub_stream != nullptr) {
-    cudaEvent_t* fork_substream_event = new cudaEvent_t;
-    cudaError_t event_create_status = cudaEventCreate(fork_substream_event);
-    CHECK_EQ(event_create_status, cudaSuccess);
+  main_stream->origin_w_grad_names = origin_w_grad_names;
+  main_stream->origin_w_grad_input1 = origin_w_grad_input1;
+  main_stream->origin_w_grad_input2 = origin_w_grad_input2;
+  main_stream->origin_wgrad_output = origin_wgrad_output;
+  
+  main_stream->new_w_grad_names = new_w_grad_names;
+  main_stream->new_w_grad_input1 = new_w_grad_input1;
+  main_stream->new_w_grad_input2 = new_w_grad_input2;
+  main_stream->new_wgrad_output = new_wgrad_output;
 
-    cudaError_t event_record_status = cudaEventRecord(*fork_substream_event, se::gpu::AsGpuStreamValue(main_stream));
-    CHECK_EQ(event_record_status, cudaSuccess);
-    cudaError_t event_wait_status = cudaStreamWaitEvent(se::gpu::AsGpuStreamValue(sub_stream), *fork_substream_event, 0);
-    CHECK_EQ(event_wait_status, cudaSuccess);
-  }
+  main_stream->w_grad_input_1_size = w_grad_input1_sizes;
+  main_stream->w_grad_input_2_size = w_grad_input2_sizes;
+  main_stream->w_grad_output_size = w_grad_output_size;
+
   cudaStreamBeginCapture(se::gpu::AsGpuStreamValue(main_stream), cudaStreamCaptureModeGlobal);
 
+  bool overlap_wgrad_capturing = false;
+  bool reamin_graph_capturing = false;
   for (Thunk* thunk : thunk_schedule_->TotalOrder()) {
     // Annotate execution of this op if tracing was enabled when we started
     // running this module.  If tracing is enabled *while* we're running the
@@ -220,16 +228,65 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
     ScopedAnnotation annotation([&] { return thunk->profile_annotation(); });
 
     int32 stream_no = thunk_schedule_->StreamNumberForThunk(thunk);
-    se::Stream* stream = (stream_no == 0 ? main_stream : sub_stream);
-
     std::string op_name = thunk_schedule_->GetThunkOpName(thunk);
     std::string hlo_name = thunk_schedule_->GetThunkHloName(thunk);
 
-    if (op_name.find("DummyConv2DBackpropFilter") != std::string::npos) {
-      break;  
+    if ( is_overlap_w_grad_op(op_name, hlo_name) ) {
+        if( !overlap_wgrad_capturing ){
+            cudaGraph_t* graph = new cudaGraph_t;
+            cudaGraphExec_t* graph_instance = new cudaGraphExec_t;
+            cudaStreamEndCapture(se::gpu::AsGpuStreamValue(main_stream), graph);
+            cudaGraphInstantiate(graph_instance, *graph, NULL, NULL, 0);
+            main_stream->graphs.push_back((void*)graph);
+            main_stream->graph_ins.push_back((void*)graph_instance);
+            main_stream->graph_names.push_back(FORWARD_GRAPH);
+            main_stream->graph_w_grad_op.push_back(false);
+
+            cudaStreamBeginCapture(se::gpu::AsGpuStreamValue(main_stream), cudaStreamCaptureModeGlobal);
+            overlap_wgrad_capturing = true;
+        }
+    }
+
+    if ( is_remain_graph_start(op_name) ) {
+        overlap_wgrad_capturing = false;
+
+        if( !reamin_graph_capturing ){
+            cudaGraph_t* graph = new cudaGraph_t;
+            cudaGraphExec_t* graph_instance = new cudaGraphExec_t;
+            cudaStreamEndCapture(se::gpu::AsGpuStreamValue(main_stream), graph);
+            cudaGraphInstantiate(graph_instance, *graph, NULL, NULL, 0);
+            main_stream->graphs.push_back((void*)graph);
+            main_stream->graph_ins.push_back((void*)graph_instance);
+            main_stream->graph_names.push_back(FORWARD_OVERLAP_GRAPH);
+            main_stream->graph_w_grad_op.push_back(true);
+
+            if (sub_stream != nullptr) {
+              cudaEvent_t* fork_substream_event = new cudaEvent_t;
+              cudaError_t event_create_status = cudaEventCreate(fork_substream_event);
+              CHECK_EQ(event_create_status, cudaSuccess);
+
+              cudaError_t event_record_status = cudaEventRecord(*fork_substream_event, se::gpu::AsGpuStreamValue(main_stream));
+              CHECK_EQ(event_record_status, cudaSuccess);
+              cudaError_t event_wait_status = cudaStreamWaitEvent(se::gpu::AsGpuStreamValue(sub_stream), *fork_substream_event, 0);
+              CHECK_EQ(event_wait_status, cudaSuccess);
+            }
+            cudaStreamBeginCapture(se::gpu::AsGpuStreamValue(main_stream), cudaStreamCaptureModeGlobal);
+            reamin_graph_capturing = true;
+        }
+    }
+
+    if( overlap_wgrad_capturing ){
+        stream_no = 0;
+    }
+    se::Stream* stream = (stream_no == 0 ? main_stream : sub_stream);
+
+    if( is_deleted_op(op_name) ){
+         continue;
     }
 
     for (const Thunk* dependency : thunk_schedule_->DependsOn(thunk)) {
+      std::string d_op_name = thunk_schedule_->GetThunkOpName(dependency);
+      std::string d_hlo_name = thunk_schedule_->GetThunkHloName(dependency);
       stream->ThenWaitFor(FindOrDie(thunk_to_finish_event, dependency).get());
     }
 
@@ -237,20 +294,22 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
             << " on stream " << stream_no;
     const GpuExecutableRunOptions* gpu_options =
         run_options->run_options().gpu_executable_run_options();
-    Thunk::ExecuteParams thunk_params{
-        &buffer_allocations,
-        stream,
-        run_options->run_options().run_id(),
-        &profiler,
-        run_options->run_options().device_assignment(),
-        &deferred_host_callbacks,
-        gpu_options && gpu_options->gpu_global_device_ids()
-            ? &*gpu_options->gpu_global_device_ids()
-            : nullptr,
-        gpu_options && gpu_options->nccl_unique_id_callback()
-            ? &gpu_options->nccl_unique_id_callback()
-            : nullptr};
-    TF_RETURN_IF_ERROR(thunk->ExecuteOnStream(thunk_params));
+
+      Thunk::ExecuteParams thunk_params{
+          &buffer_allocations,
+          stream,
+          run_options->run_options().run_id(),
+          &profiler,
+          run_options->run_options().device_assignment(),
+          &deferred_host_callbacks,
+          gpu_options && gpu_options->gpu_global_device_ids()
+              ? &*gpu_options->gpu_global_device_ids()
+              : nullptr,
+          gpu_options && gpu_options->nccl_unique_id_callback()
+              ? &gpu_options->nccl_unique_id_callback()
+              : nullptr};
+      TF_RETURN_IF_ERROR(thunk->ExecuteOnStream(thunk_params));
+
 
     if (thunk_schedule_->Depended(thunk)) {
       auto finish_event = absl::make_unique<se::Event>(main_stream->parent());
@@ -260,24 +319,27 @@ Status GpuExecutable::ExecuteThunksAndGraphCapture(
     }
   }
 
-  if (sub_stream != nullptr) {
-    cudaEvent_t* join_stream_event = new cudaEvent_t;
-    cudaError_t event_create_status = cudaEventCreate(join_stream_event);
-    CHECK_EQ(event_create_status, cudaSuccess);
+  {
+    if (sub_stream != nullptr) {
+      cudaEvent_t* join_stream_event = new cudaEvent_t;
+      cudaError_t event_create_status = cudaEventCreate(join_stream_event);
+      CHECK_EQ(event_create_status, cudaSuccess);
 
-    cudaError_t event_record_status = cudaEventRecord(*join_stream_event, se::gpu::AsGpuStreamValue(sub_stream));
-    CHECK_EQ(event_record_status, cudaSuccess);
-    cudaError_t event_wait_status = cudaStreamWaitEvent(se::gpu::AsGpuStreamValue(main_stream), *join_stream_event, 0);
-    CHECK_EQ(event_wait_status, cudaSuccess);
+      cudaError_t event_record_status = cudaEventRecord(*join_stream_event, se::gpu::AsGpuStreamValue(sub_stream));
+      CHECK_EQ(event_record_status, cudaSuccess);
+      cudaError_t event_wait_status = cudaStreamWaitEvent(se::gpu::AsGpuStreamValue(main_stream), *join_stream_event, 0);
+      CHECK_EQ(event_wait_status, cudaSuccess);
+    }
+
+    cudaGraph_t* graph = new cudaGraph_t;
+    cudaGraphExec_t* graph_instance = new cudaGraphExec_t;
+    cudaStreamEndCapture(se::gpu::AsGpuStreamValue(main_stream), graph);
+    cudaGraphInstantiate(graph_instance, *graph, NULL, NULL, 0);
+    main_stream->graphs.push_back((void*)graph);
+    main_stream->graph_ins.push_back((void*)graph_instance);
+    main_stream->graph_names.push_back(DEFAULT_GRAPH);
+    main_stream->graph_w_grad_op.push_back(true);
   }
-
-  cudaGraph_t* graph = new cudaGraph_t;
-  cudaGraphExec_t* graph_instance = new cudaGraphExec_t;
-  cudaStreamEndCapture(se::gpu::AsGpuStreamValue(main_stream), graph);
-  cudaGraphInstantiate(graph_instance, *graph, NULL, NULL, 0);
-  // TODO move graphs & graph_ins
-  main_stream->graphs.push_back((void*)graph);
-  main_stream->graph_ins.push_back((void*)graph_instance);
 
   // Make sure kernels are completed before deallocating temporary buffers or
   // the profiler state.
@@ -361,11 +423,16 @@ Status GpuExecutable::ExecuteThunks(
     // module, we won't get any data, but that's probably an OK trade-off.
     ScopedAnnotation annotation([&] { return thunk->profile_annotation(); });
 
+    std::string op_name = thunk_schedule_->GetThunkOpName(thunk);
+    std::string hlo_name = thunk_schedule_->GetThunkHloName(thunk);
+
     int32 stream_no = thunk_schedule_->StreamNumberForThunk(thunk);
     se::Stream* stream =
         (stream_no == 0 ? main_stream : sub_streams[stream_no - 1].get());
 
     for (const Thunk* dependency : thunk_schedule_->DependsOn(thunk)) {
+      std::string d_op_name = thunk_schedule_->GetThunkOpName(dependency);
+      std::string d_hlo_name = thunk_schedule_->GetThunkHloName(dependency);
       stream->ThenWaitFor(FindOrDie(thunk_to_finish_event, dependency).get());
     }
 
@@ -441,6 +508,8 @@ Status GpuExecutable::ExecuteThunks(
               *module().entry_computation()));
     }
   }
+
+  // TEST
 
   return Status::OK();
 }
@@ -626,7 +695,7 @@ std::vector<std::string> StringSplit(std::string input, char delimiter) {
   return ret;
 }
 
-void GpuExecutable::RewireWeightGradInputs() {
+void GpuExecutable::SaveAndCopyWgradInputData( const BufferAllocations& buffer_allocations ) {
   for (Thunk* thunk : thunk_schedule_->TotalOrder()) {
     std::string op_name = thunk_schedule_->GetThunkOpName(thunk);
     std::string hlo_name = thunk_schedule_->GetThunkHloName(thunk);
@@ -643,7 +712,6 @@ void GpuExecutable::RewireWeightGradInputs() {
     if (op_name.find("gradients") != std::string::npos &&
         op_name.find("Dummy") == std::string::npos &&
         op_name.find("Conv2DBackpropFilter") != std::string::npos) {
-
       ConvolutionThunk* target_wgrad_op = (ConvolutionThunk*)thunk;
 
       int target_wgrad_layer_id = -1;
@@ -659,29 +727,70 @@ void GpuExecutable::RewireWeightGradInputs() {
       // 2. find dummy(original) weight grad layer
       ConvolutionThunk* origin_wgrad_op = nullptr;
       std::string origin_wgrad_op_layer_name = "CONV_" + std::to_string(target_wgrad_layer_id) + "_FWD";
-      for (Thunk* thunk : thunk_schedule_->TotalOrder()) {
-        std::string op_name = thunk_schedule_->GetThunkOpName(thunk);
-        std::string hlo_name = thunk_schedule_->GetThunkHloName(thunk);
+      for (Thunk* dummy_thunk : thunk_schedule_->TotalOrder()) {
+        std::string dummy_op_name = thunk_schedule_->GetThunkOpName(dummy_thunk);
+        std::string dummy_hlo_name = thunk_schedule_->GetThunkHloName(dummy_thunk);
 
         if (hlo_name.find("custom-call") == std::string::npos) {
           continue;
         }
 
-        if (op_name.find("gradients") != std::string::npos &&
-            op_name.find("DummyConv2DBackpropFilter") != std::string::npos &&
-            op_name.find(origin_wgrad_op_layer_name) != std::string::npos) {
-          origin_wgrad_op = (ConvolutionThunk*)thunk;
+        if (dummy_op_name.find("gradients") != std::string::npos &&
+            dummy_op_name.find("DummyConv2DBackpropFilter") != std::string::npos &&
+            dummy_op_name.find(origin_wgrad_op_layer_name) != std::string::npos) {
+            origin_wgrad_op = (ConvolutionThunk*)dummy_thunk;
+
+            {
+              void* o_in1 = buffer_allocations.GetDeviceAddress(  target_wgrad_op->operand_buffers_[0] ).opaque();
+              void* o_in2 = buffer_allocations.GetDeviceAddress(  target_wgrad_op->operand_buffers_[1] ).opaque();
+              void* o_out1 = buffer_allocations.GetDeviceAddress(  target_wgrad_op->result_buffer_ ).opaque();
+              int o_in1_size = target_wgrad_op->operand_buffers_[0].size();
+              int o_in2_size = target_wgrad_op->operand_buffers_[1].size();
+              int o_out_size = target_wgrad_op->result_buffer_.size();
+
+              new_w_grad_names.push_back(op_name);
+              new_w_grad_input1.push_back(o_in1);
+              new_w_grad_input2.push_back(o_in2);
+              new_wgrad_output.push_back(o_out1);
+              w_grad_input1_sizes.push_back(o_in1_size);
+              w_grad_input2_sizes.push_back(o_in2_size);
+              w_grad_output_size.push_back(o_out_size);
+            }
+
+            {
+              void* o_in1 = buffer_allocations.GetDeviceAddress(  origin_wgrad_op->operand_buffers_[0] ).opaque();
+              void* o_in2 = buffer_allocations.GetDeviceAddress(  origin_wgrad_op->operand_buffers_[1] ).opaque();
+              void* o_out1 = buffer_allocations.GetDeviceAddress(  origin_wgrad_op->result_buffer_ ).opaque();
+              int o_in1_size = origin_wgrad_op->operand_buffers_[0].size();
+              int o_in2_size = origin_wgrad_op->operand_buffers_[1].size();
+              int o_out_size = origin_wgrad_op->result_buffer_.size();
+
+              origin_w_grad_names.push_back(dummy_op_name);
+              origin_w_grad_input1.push_back(o_in1);
+              origin_w_grad_input2.push_back(o_in2);
+              origin_wgrad_output.push_back(o_out1);
+            }
+          }
         }
       }
-
-      // 3. swap input datas of weight grad op
-      std::vector<BufferAllocation::Slice> new_wgrad_input_buffers;
-      new_wgrad_input_buffers.push_back(origin_wgrad_op->operand_buffers_[0]);
-      new_wgrad_input_buffers.push_back(origin_wgrad_op->operand_buffers_[1]);
-
-      target_wgrad_op->operand_buffers_ = new_wgrad_input_buffers;
     }
-  }
+
+    int block_4_w_grad_size = w_grad_input1_sizes.size();
+    for( int i = 0; i < block_4_w_grad_size; i++ ){
+        size_t input_size1 = w_grad_input1_sizes[i];
+        size_t input_size2 = w_grad_input2_sizes[i];
+
+        void* new_input1_ptr = new_w_grad_input1[i];
+        void* new_input2_ptr = new_w_grad_input2[i];
+        std::string new_name = new_w_grad_names[i];
+
+        void* ori_input1_ptr = origin_w_grad_input1[i];
+        void* ori_input2_ptr = origin_w_grad_input2[i];
+        std::string ori_name = origin_w_grad_names[i];
+
+        cudaMemcpy(new_input1_ptr, ori_input1_ptr, input_size1, cudaMemcpyDeviceToDevice); 
+        cudaMemcpy(new_input2_ptr, ori_input2_ptr, input_size2, cudaMemcpyDeviceToDevice); 
+    }
 }
 
 StatusOr<ExecutionOutput> GpuExecutable::ExecuteAsyncOnStream(
@@ -814,20 +923,26 @@ StatusOr<ExecutionOutput> GpuExecutable::ExecuteAsyncOnStream(
     TF_RETURN_IF_ERROR(thunk->Initialize(*this, executor));
   }
 
+  static int call_cnt = 0;
   if (do_ooo_backprop_) {
     if (is_main_executable_) {
       execution_count_++;
     }
 
-    if (execution_count_ != capture_iter_) { 
+    if (execution_count_ != capture_iter_ ) { 
       TF_RETURN_IF_ERROR(ExecuteThunks(run_options, buffer_allocations,
                                        block_host_until_done,
                                        hlo_execution_profile));
     } else {
-      RewireWeightGradInputs();  
+      SaveAndCopyWgradInputData(buffer_allocations);
       TF_RETURN_IF_ERROR(ExecuteThunksAndGraphCapture(run_options, buffer_allocations,
                                                       block_host_until_done,
                                                       hlo_execution_profile));
+     
+
+
+      execution_count_++;
+      do_ooo_backprop_ = false;
     }
   } else {
     TF_RETURN_IF_ERROR(ExecuteThunks(run_options, buffer_allocations,
@@ -841,6 +956,9 @@ StatusOr<ExecutionOutput> GpuExecutable::ExecuteAsyncOnStream(
 
   // Free allocations for arguments.
   MarkToBeReleasedArguments(absl::MakeSpan(arguments), result);
+
+
+
   return std::move(result);
 }
 

@@ -584,11 +584,10 @@ struct GraphCollector {
 
 class OpKernelContext {
  public:
-  // JY
   bool is_capture_ready_ = false;
   // std::vector<std::pair<void*, void*>> old_new_weight_pair_;
   // std::vector<int> weight_sizes_;
-  std::vector<std::tuple<void*, void*, size_t>> overwrite_weight_list_;
+  std::vector<std::tuple<void*, void*, size_t, size_t>> overwrite_weight_list_;
 
   // The first element of a WrappedAllocator is a "base" Allocator and
   // the second element is that Allocator wrapped by a
@@ -716,7 +715,7 @@ class OpKernelContext {
   // params must outlive the OpKernelContext.
   explicit OpKernelContext(Params* params);
   OpKernelContext(Params* params, int num_outputs);
-  // JY
+
   OpKernelContext(Params* params, int num_outputs, bool sub_stream_op_param);
   ~OpKernelContext();
 
@@ -1066,7 +1065,6 @@ class OpKernelContext {
   template <typename T>
   T* op_device_context();
   DeviceContext* op_device_context() {
-    // JY
     if (sub_stream_op) {
       auto* dev_info = device()->tensorflow_gpu_device_info();
       return dev_info->sub_stream_context;
@@ -1276,7 +1274,6 @@ class OpKernelContext {
 
   Allocator* get_allocator(AllocatorAttributes attr);
 
-  // JY
   bool sub_stream_op = false;
 
  private:

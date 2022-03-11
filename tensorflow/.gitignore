@@ -47,4 +47,3 @@ gradleBuild
 Podfile.lock
 Pods
 xcuserdata
-*tags

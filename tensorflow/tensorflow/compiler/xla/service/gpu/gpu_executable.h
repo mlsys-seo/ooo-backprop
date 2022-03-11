@@ -109,14 +109,12 @@ class GpuExecutable : public Executable {
                        bool block_host_until_done,
                        HloExecutionProfile* hlo_execution_profile);
 
-  // JY
   Status ExecuteThunksAndGraphCapture(const ServiceExecutableRunOptions* run_options,
                                       const BufferAllocations& buffer_allocations,
                                       bool block_host_until_done,
                                       HloExecutionProfile* hlo_execution_profile);
 
-  // JY
-  void RewireWeightGradInputs();
+  void SaveAndCopyWgradInputData( const BufferAllocations& buffer_allocations );
 
   // Returns the value set of the root instruction of the entry
   // computation. Uses dataflow analysis from buffer assignment.
@@ -187,11 +185,57 @@ class GpuExecutable : public Executable {
 
   std::vector<ConstantInfo> constants_;
 
-  // JY
   bool do_ooo_backprop_ = false;
   bool is_main_executable_ = false;
   int execution_count_ = 0;
   int capture_iter_ = -1;
+
+  std::vector<std::string> origin_w_grad_names;
+  std::vector<void*> origin_w_grad_input1;
+  std::vector<void*> origin_w_grad_input2;
+  std::vector<void*> origin_wgrad_output;
+  
+  std::vector<std::string> new_w_grad_names;
+  std::vector<void*> new_w_grad_input1;
+  std::vector<void*> new_w_grad_input2;
+  std::vector<void*> new_wgrad_output;
+  
+  std::vector<size_t> w_grad_input1_sizes;
+  std::vector<size_t> w_grad_input2_sizes;
+  std::vector<size_t> w_grad_output_size;
+  
+  std::string FORWARD_GRAPH = "FIRST_Graph";
+  std::string FORWARD_OVERLAP_GRAPH = "FORWARD_OVERLAP_WGRADS";
+  std::string DEFAULT_GRAPH = "LAST_GRAPH";
+
+  bool is_overlap_w_grad_op( std::string op_name, std::string hlo_name  ){
+        if ( op_name.find("B4") != std::string::npos && 
+             op_name.find("Conv2DBackpropFilter") != std::string::npos &&
+             op_name.find("Dummy") == std::string::npos &&
+             hlo_name.find("custom") != std::string::npos ) {
+            return true;
+        } else {
+            return false;
+        }
+  }
+
+  bool is_remain_graph_start( std::string op_name  ){
+        if ( op_name.find("B3") != std::string::npos ) {
+            return true;
+        } else {
+            return false;
+        }
+  }
+
+  bool is_deleted_op( std::string op_name ){
+    if (op_name.find("DummyConv2DBackpropFilter") != std::string::npos) {
+        return true;
+    } else {
+        return false;
+    }
+  }
+
+
 
   TF_DISALLOW_COPY_AND_ASSIGN(GpuExecutable);
 };

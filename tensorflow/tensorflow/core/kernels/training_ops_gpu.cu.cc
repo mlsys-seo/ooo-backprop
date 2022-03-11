@@ -66,7 +66,6 @@ __global__ __launch_bounds__(1024) void ApplyAdamKernel(
   }
 }
 
-// JY : dummy op
 template <typename T>
 struct CudaGraphRun<GPUDevice, T> {
   void operator()(const GPUDevice& d) {
@@ -997,7 +996,6 @@ template struct functor::ApplyPowerSign<GPUDevice, Eigen::half>;
 template struct functor::ApplyPowerSign<GPUDevice, float>;
 template struct functor::ApplyPowerSign<GPUDevice, double>;
 
-// JY
 template struct functor::CudaGraphRun<GPUDevice, Eigen::half>;
 template struct functor::CudaGraphRun<GPUDevice, float>;
 template struct functor::CudaGraphRun<GPUDevice, double>;

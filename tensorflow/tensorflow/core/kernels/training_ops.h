@@ -280,7 +280,6 @@ struct ApplyPowerSign {
                   typename TTypes<T>::ConstFlat grad);
 };
 
-// JY
 template <typename Device, typename T>
 struct CudaGraphRun{
   void operator()(const Device& d);

@@ -22,7 +22,6 @@ using shape_inference::DimensionHandle;
 using shape_inference::InferenceContext;
 using shape_inference::ShapeHandle;
 
-// JY
 REGISTER_OP("CudaGraphRun")
     .Input("var: T")
     .Output("out: T")

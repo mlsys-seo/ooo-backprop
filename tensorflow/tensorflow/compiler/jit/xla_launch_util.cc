@@ -39,6 +39,9 @@ limitations under the License.
 #include "tensorflow/core/lib/core/refcount.h"
 #include "tensorflow/core/util/stream_executor_util.h"
 
+//JUN TEST
+#include "third_party/gpus/cudnn/cudnn.h"
+
 namespace tensorflow {
 namespace {
 using xla::ScopedShapedBuffer;
@@ -408,6 +411,7 @@ Status XlaComputationLaunchContext::PopulateOutputs(
     absl::Span<VariableInfo> variable_infos,
     const xla::HloInputOutputAliasConfig& input_output_alias,
     const std::map<int, const Tensor*>& resource_vars) {
+
   se::Stream* stream =
       ctx->op_device_context() ? ctx->op_device_context()->stream() : nullptr;
   Allocator* allocator = ctx->device()->GetAllocator({});
@@ -517,9 +521,11 @@ Status XlaComputationLaunchContext::PopulateOutputs(
     variable_info_lookup.emplace(variable_infos[i].index(), i);
   }
 
+  //clear_weights = false;
   // Apply variable updates, if any.
   for (int i = 0, end = compilation_result->resource_updates.size(); i < end;
        ++i) {
+
     const XlaCompiler::ResourceUpdate& write =
         compilation_result->resource_updates[i];
     int actual_input_index = write.input_index - missing_ctx_input_prefix;
@@ -555,24 +561,24 @@ Status XlaComputationLaunchContext::PopulateOutputs(
     output.set_buffer(se::OwningDeviceMemory(), {output_num});
     var->is_initialized |= write.modified;
 
-    // JY
+    int dim_size = var->tensor()->dims();
     size_t weight_size = 1;
+
     for (int d = 0; d < var->tensor()->dims(); d++) {
       size_t dim = var->tensor()->dim_size(d);
       weight_size *= dim;
     }
-    // std::cout << "[JUN] tensor total size : " << total_w_size << "\n";
 
-    if (ctx->is_capture_ready_) {
-      auto overwrite_weight_tuple = std::make_tuple(var->tensor()->data(), output_tensor.data(), weight_size);
+    if (ctx->is_capture_ready_ ) {
+      auto overwrite_weight_tuple = std::make_tuple(var->tensor()->data(), output_tensor.data(), weight_size, dim_size);
       ctx->overwrite_weight_list_.push_back(overwrite_weight_tuple);
-      // std::cout << "[JUN] capture step param memcpy ####################### \n";
     } else {
       *var->tensor() = output_tensor;
     }
 
     ++output_num;
   }
+
   return Status::OK();
 }
 

@@ -344,18 +344,15 @@ OpKernelContext::OpKernelContext(Params* params, int num_outputs)
   }
 }
 
-// JY
 OpKernelContext::OpKernelContext(Params* params, int num_outputs, bool sub_stream_op_param)
     : params_(params), outputs_(num_outputs), sub_stream_op(sub_stream_op_param) {
   if (params_->track_allocations) {
     tracking_state_ = absl::make_unique<TrackingState>();
   }
 
-  VLOG(1) << "[JUN] OpKernelContext created";
   params_->ensure_eigen_gpu_device();
   if (params_->eigen_gpu_device != nullptr) {
     if (sub_stream_op) {
-      VLOG(1) << "[JUN] sub stream op";
       auto* dev_info = device()->tensorflow_gpu_device_info();
       Allocator* eigen_gpu_allocator = get_allocator(AllocatorAttributes());
       Status s = params_->device->ReinitializeGpuDevice(

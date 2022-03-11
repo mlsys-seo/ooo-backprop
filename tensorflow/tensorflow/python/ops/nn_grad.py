@@ -573,12 +573,14 @@ class _DummyTensorManager:
     self.dummy_tensor_id = 0;
 
   def get_tensor(self, shape):
-    if shape not in self.dummy_tensor_dict.keys():
-      self.dummy_tensor_dict[shape] \
-          = tf.stop_gradient(tf.Variable(tf.zeros_like(shape), name=f"dummy_tensor{self.dummy_tensor_id}"))
-      self.dummy_tensor_id += 1;
+    #if shape not in self.dummy_tensor_dict.keys():
+    #  self.dummy_tensor_dict[shape] \
+    #      = tf.stop_gradient(tf.Variable(tf.zeros_like(shape), name=f"dummy_tensor{self.dummy_tensor_id}"))
+    #  self.dummy_tensor_id += 1;
 
-    return self.dummy_tensor_dict[shape]
+    #return self.dummy_tensor_dict[shape]
+    self.dummy_tensor_id += 1;
+    return tf.stop_gradient(tf.Variable(tf.zeros_like(shape), name=f"dummy_tensor{self.dummy_tensor_id}"))
 
 dummy_tensor_manager = _DummyTensorManager();
 

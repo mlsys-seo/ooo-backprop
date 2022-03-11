@@ -377,6 +377,14 @@ class BaseGPUDevice::StreamGroupFactory {
   TF_DISALLOW_COPY_AND_ASSIGN(StreamGroupFactory);
 };
 
+bool is_conv_param( int dim_size ){
+    if( dim_size > 2 ){
+        return true;
+    } else {
+        return false;
+    }
+}
+
 BaseGPUDevice::BaseGPUDevice(const SessionOptions& options, const string& name,
                              Bytes memory_limit, const DeviceLocality& locality,
                              TfGpuId tf_gpu_id,
@@ -421,6 +429,8 @@ Status BaseGPUDevice::InitScratchBuffers() {
   }
   return Status::OK();
 }
+
+int forward_overlap_layer_num = 0;
 
 Status BaseGPUDevice::Init(const SessionOptions& options) {
   auto executor_status = GpuIdUtil::ExecutorForTfGpuId(tf_gpu_id_);
@@ -550,6 +560,10 @@ Status BaseGPUDevice::Init(const SessionOptions& options) {
     const char* cstr_capture_iter = std::getenv("OOO_CAPTURE_ITER");
     std::string str_capture_iter(cstr_capture_iter ? cstr_capture_iter : "");
     capture_iter_ = std::stoi(str_capture_iter);
+
+    const char* cstr_num_block_overlap_forward = std::getenv("OOO_NUM_BLOCK_OVERLAP_FORWARD");
+    std::string num_block_overlap_forward(cstr_num_block_overlap_forward ? cstr_num_block_overlap_forward: "");
+    forward_overlap_layer_num = std::stoi(num_block_overlap_forward); //TODO move hedaer
   }
 
   return Status::OK();
@@ -562,9 +576,15 @@ string BaseGPUDevice::ComputeOpKernelDebugString(const OpKernel& op_kernel,
                          "]");
 }
 
+std::string FORWARD_GRAPH = "FIRST_Graph";
+std::string FORWARD_OVERLAP_GRAPH = "FORWARD_OVERLAP_WGRADS";
+std::string DEFAULT_GRAPH = "LAST_GRAPH";
+
 void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
   static int iter_num = 0;
-  static std::vector<std::tuple<void*, void*, size_t>> overwrite_weight_list;
+  static int num_conv_layer = 0;
+  static std::vector<std::tuple<void*, void*, size_t, size_t>> overwrite_weight_list;
+  
 
   if (!capture_op_name_.empty() && op_kernel->name() == capture_op_name_) {
     iter_num++;
@@ -610,21 +630,91 @@ void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
 
   if (op_kernel->type_string() == "CudaGraphRun") {
     if (stream->graph_ins.size() > 0) {
+       
       for (int i = 0; i < stream->graph_ins.size(); i++) {
+        bool wgrad_graph = stream->graph_w_grad_op[i];
+        std::string GRAPH_TYPE = stream->graph_names[i];
+
         cudaGraphExec_t* instance = static_cast<cudaGraphExec_t*>(stream->graph_ins[i]);
-        cudaError_t err = cudaGraphLaunch(*instance, se::gpu::AsGpuStreamValue(stream));
-        CHECK_EQ(err, cudaSuccess);
-      }
 
-      cudaDeviceSynchronize();
+        if( GRAPH_TYPE == FORWARD_OVERLAP_GRAPH ) {
+            se::Stream* sub_stream = (se::Stream*)stream->sub_stream_;
+            cudaError_t err = cudaGraphLaunch(*instance, se::gpu::AsGpuStreamValue(sub_stream ));
+            CHECK_EQ(err, cudaSuccess);
+        } else {
+            cudaError_t err = cudaGraphLaunch(*instance, se::gpu::AsGpuStreamValue(stream));
+            CHECK_EQ(err, cudaSuccess);
+        }
 
-      // Update weight parameter
-      for (auto& overwrite_weight_tuple : overwrite_weight_list) {
-        void* old_weight = std::get<0>(overwrite_weight_tuple);
-        void* updated_weight = std::get<1>(overwrite_weight_tuple);
-        size_t weight_size = std::get<2>(overwrite_weight_tuple);
-        cudaMemcpyAsync(old_weight, updated_weight, sizeof(float) * weight_size, 
-                        cudaMemcpyDeviceToDevice, se::gpu::AsGpuStreamValue(stream));
+        if( GRAPH_TYPE == FORWARD_GRAPH ) {
+            continue;
+        }
+
+        cudaDeviceSynchronize();
+        if( !wgrad_graph ){
+            std::cout << "no w grad skip weight copy ##########################\n";
+            exit(1);
+            continue;
+        }
+
+        int conv_layer_cnt = 0;
+        // Update weight parameter
+        for (auto& overwrite_weight_tuple : overwrite_weight_list) {
+          void* old_weight = std::get<0>(overwrite_weight_tuple);
+          void* updated_weight = std::get<1>(overwrite_weight_tuple);
+          size_t weight_size = std::get<2>(overwrite_weight_tuple);
+          size_t dim_size = std::get<3>(overwrite_weight_tuple);
+          bool copied = false;
+
+	      if( is_conv_param(dim_size) ){
+            conv_layer_cnt++;
+
+            if( forward_overlap_layer_num == 0 ){
+                continue;
+            }
+
+            if( GRAPH_TYPE == FORWARD_OVERLAP_GRAPH && conv_layer_cnt > forward_overlap_layer_num ){
+                cudaMemcpyAsync(old_weight, updated_weight, sizeof(float) * weight_size, 
+                              cudaMemcpyDeviceToDevice, se::gpu::AsGpuStreamValue(stream));
+                copied = true;
+            }
+	      }
+
+          if( GRAPH_TYPE == FORWARD_OVERLAP_GRAPH ){
+            continue;
+          }
+
+          if( !copied ){
+            cudaMemcpyAsync(old_weight, updated_weight, sizeof(float) * weight_size, 
+                                  cudaMemcpyDeviceToDevice, se::gpu::AsGpuStreamValue(stream));
+          }
+        } 
+
+        if( GRAPH_TYPE == FORWARD_OVERLAP_GRAPH ) {
+            if( forward_overlap_layer_num == 0 ){
+                std::cout << "[ERR] FORWARD OVERLAP GRAPH but overlap layer num is 0 \n";
+                exit(1);
+            }
+            continue;
+        }
+
+        if( forward_overlap_layer_num != 0 ){
+            int block_4_w_grad_size = stream->w_grad_input_1_size.size();
+            for( int i = 0; i < block_4_w_grad_size; i++ ){
+                size_t input_size1 = stream->w_grad_input_1_size[i];
+                size_t input_size2 = stream->w_grad_input_2_size[i];
+                void* new_input1_ptr = stream->new_w_grad_input1[i];
+                void* new_input2_ptr = stream->new_w_grad_input2[i];
+                std::string new_name = stream->new_w_grad_names[i];
+
+                void* ori_input1_ptr = stream->origin_w_grad_input1[i];
+                void* ori_input2_ptr = stream->origin_w_grad_input2[i];
+                std::string ori_name = stream->origin_w_grad_names[i];
+
+                cudaMemcpy(new_input1_ptr, ori_input1_ptr, input_size1, cudaMemcpyDeviceToDevice); 
+                cudaMemcpy(new_input2_ptr, ori_input2_ptr, input_size2, cudaMemcpyDeviceToDevice); 
+            }
+        }
       }
     } else {
       std::cout << "ERROR: There is no cuda graph" << std::endl;
@@ -638,6 +728,18 @@ void BaseGPUDevice::Compute(OpKernel* op_kernel, OpKernelContext* context) {
 
   if (is_capture_phase) {
     overwrite_weight_list = context->overwrite_weight_list_;
+
+    for (auto& overwrite_weight_tuple : overwrite_weight_list) {
+        void* old_weight = std::get<0>(overwrite_weight_tuple);
+        void* updated_weight = std::get<1>(overwrite_weight_tuple);
+        size_t weight_size = std::get<2>(overwrite_weight_tuple);
+        size_t dim_size = std::get<3>(overwrite_weight_tuple);
+        cudaMemcpyAsync(updated_weight, old_weight, sizeof(float) * weight_size, 
+                              cudaMemcpyDeviceToDevice, se::gpu::AsGpuStreamValue(stream));
+	    if( is_conv_param(dim_size) ){
+            num_conv_layer++;
+	    }
+    }
   }
 
   if (context->status().ok()) {

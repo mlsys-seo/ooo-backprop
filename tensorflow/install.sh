@@ -9,4 +9,3 @@ pip install ~/tmp/tensorflow-2.4.0-cp36-cp36m-linux_x86_64.whl
 # There may be an issue about protocal buffer package version. Downgrade the package to the version 3.10.0
 pip uninstall -y protobuf
 pip install protobuf==3.10.0
-

@@ -107,6 +107,35 @@ class Stream {
  public:
   std::vector<void*> graphs;
   std::vector<void*> graph_ins;
+  std::vector<std::string> graph_names;
+  std::vector<bool> graph_w_grad_op;
+
+  std::vector<void*> cpu_11_input2;
+  std::vector<size_t> input2_size;
+
+
+  std::vector<std::string> w_grad_names;
+  std::vector<size_t> w_grad_input_1_size;
+  std::vector<size_t> w_grad_input_2_size;
+  std::vector<size_t> w_grad_output_size;
+  std::vector<void*> w_grad_input_1;
+  std::vector<void*> w_grad_input_2;
+  std::vector<void*> w_grad_output;
+
+///
+  std::vector<std::string> origin_w_grad_names;
+  std::vector<void*> origin_w_grad_input1;
+  std::vector<void*> origin_w_grad_input2;
+  std::vector<void*> origin_wgrad_output;
+
+  std::vector<std::string> new_w_grad_names;
+  std::vector<void*> new_w_grad_input1;
+  std::vector<void*> new_w_grad_input2;
+  std::vector<void*> new_wgrad_output;
+
+//
+
+
   void* sub_stream_ = nullptr;
 
   // Instantiate a stream tied to parent as a platform executor. Work

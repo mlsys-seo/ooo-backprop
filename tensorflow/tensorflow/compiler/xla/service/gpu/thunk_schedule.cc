@@ -85,14 +85,6 @@ ThunkSchedule::ThunkSchedule(
   }
   RemoveRedundantDependencyEdges();
 
-  std::cout << "\n[JY] After RemoveRedundantDependencyEdges.... ###############################" << std::endl;
-  for (const auto& dependency : depends_on_) {
-    for (const auto* depended : dependency.second) {
-      std::cout << "depends_on_ - thunk : " << thunk_to_hlo_.at(dependency.first)->metadata().op_name()
-                << ", operand : " << thunk_to_hlo_.at(depended)->metadata().op_name() << std::endl;
-    }
-  }
-
   // Compute `depended_by_`, the inverse of `depends_on_`.
   for (const auto& dependency : depends_on_) {
     for (const auto* depended : dependency.second) {

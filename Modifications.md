@@ -40,7 +40,7 @@ The function RewireWeightGradInputs() (in line 698) is applied if a weight gradi
 
 
 ### D. Executing the captured CUDA Graph
-* Source code: tensorflow/tensorflow/core/common_runtime/gpu/gpu_device.cc (line: 611–633)
+* Source code: tensorflow/tensorflow/core/common_runtime/gpu/gpu_device.cc (line: 631–719)
 
 * GIthub link: [gpu_device.cc](https://github.com/mlsys-seo/ooo-backprop/blob/9297229f2d8ef1ebf28a507ab38d16e28639f32d/tensorflow/tensorflow/core/common_runtime/gpu/gpu_device.cc#L631)
 

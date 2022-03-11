@@ -182,11 +182,6 @@ void BFSLaunchOrder(const HloComputation* computation,
       }
     }
   }
-  
-  std::cout << "####### launch order ############## \n";
-  for (auto* hlo : *launch_order) {
-      std::cout << "\t op : " << hlo->metadata().op_name() << " " << hlo->name()  << "\n";
-  }
 }
 
 std::vector<std::string> StringSplit(std::string str, char delimiter) {
@@ -331,12 +326,6 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
   };
 
   for (auto* hlo : computation->instructions()) {
-    //std::cout << "op : " << hlo->metadata().op_name() << " " << hlo->name()  << "\n";
-    /*
-    for (HloInstruction* y : hlo->users()) {
-      std::cout << "\t" << y->metadata().op_name() << " " << y->name()  << " cnt : " << incoming_edge_count[y] << "\n";
-    }
-    */
 
     if (hlo->operand_count() == 0) {
       queue.push_back(hlo);
@@ -359,23 +348,16 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
   for (auto* hlo : computation->instructions()) {
     if (IsForwardOp(*hlo)) {
       fwd_ops.push_back(hlo);  
-      //std::cout << "### forward op : " << hlo->metadata().op_name() << "\n";
     } else if (OverlapForward(*hlo)) {
       int target_forward_id = GetOverlapTargetLayerId(*hlo);
       auto it = fwd_overlap_wgrad_ops.find(target_forward_id);
       if (it == fwd_overlap_wgrad_ops.end()) {
-        //std::cout << "create wgrad ops!!!!!!!!!!!!!!!! target  : "<< target_forward_id << "\n";
         std::map<int, HloInstruction*, std::greater<int>> wgrad_ops;
         fwd_overlap_wgrad_ops[target_forward_id] = std::move(wgrad_ops);
       }
 
       int mylayer_id = GetLayerId(*hlo);
-      //std::cout << "### overlap forward op : " << hlo->metadata().op_name() << "my layer : " << mylayer_id << " target : " << target_forward_id << "\n";
       HloInstruction* update_op = hlo->users()[0]->users()[0];
-      //std::cout << "### overlap forward update op  : " << update_op->metadata().op_name() << "\n";
-
-      //fwd_overlap_wgrad_ops[target_forward_id].push_back(hlo);
-      //std::map<int,  HloInstruction*, std::greater<int>> wgrad_ops = fwd_overlap_wgrad_ops[target_forward_id];
       f_wgrad_ops[mylayer_id] = hlo;
 
     } else if (IsDummyForOverlapForward(*hlo)) {
@@ -383,9 +365,6 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
       HloInstruction* update_op = hlo->users()[0]->users()[0];
       dummy_op->RemoveUser(update_op);
       incoming_edge_count[update_op] -= 1;
-
-      //std::cout << "### dummy for Overalp Forward op : " << hlo->metadata().op_name() << " " << hlo->name()  << "\n";
-      //std::cout << "### update OP : " << update_op->metadata().op_name() << " " << update_op->name() <<"\n";
       dummy_ops.push_back(hlo);
     } else if (OverlapOutputGrad(*hlo)) {
       int target_output_grad_id = 0;
@@ -466,13 +445,6 @@ void MakeOOOLaunchOrder(const HloComputation* computation,
       }
     }
   }
-
-  /*
-  std::cout << "####### launch order ############## \n";
-  for (auto* hlo : *launch_order) {
-      std::cout << "op : " << hlo->metadata().op_name() << " " << hlo->name()  << "\n";
-  }
-  */
 }
 
 }  // end namespace

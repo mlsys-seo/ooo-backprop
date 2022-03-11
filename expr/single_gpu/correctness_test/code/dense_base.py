@@ -96,7 +96,6 @@ class DenseNet:
             ),
         )
         self._curr_layer_num += 1
-        print(conv)
 
         return conv
 
@@ -193,10 +192,6 @@ def main():
     train_op = optimizer.apply_gradients(gvs)
 
     tvs = tf.compat.v1.trainable_variables()
-
-    for train_var in tvs:
-        if( len(train_var.shape) > 2 ):
-            print(train_var.name, "\t", train_var.shape)
 
     cuda_graph_run_op = training_ops.prepare_cuda_graph_capture()
 

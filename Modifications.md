@@ -1,3 +1,10 @@
+# Overview
+
+Our optimized scheduling algorithms for data-parallel and pipeline-parallel training are implemented entirely in Python, which is described at the botton of this page.
+For the single-GPU training, our optimization, that is, multi-stream ooo computation, requires modifications in TensorFlow, which we first describe below.
+
+## Changes in TensorFlow for single-GPU Training
+
 The source code modification in TensorFlow XLA is for multi-stream out-of-order computation (Section 4.1) and pre-compiled kernel issue (Section 4.2) for single-GPU training. The following (A–D) are the locations and descriptions of our modifications.
 
 ### A. Stream allocation
@@ -38,3 +45,10 @@ The function RewireWeightGradInputs() (in line 629) is applied if a weight gradi
 * GIthub link: [gpu_device.cc](https://github.com/mlsys-seo/ooo-backprop/blob/17de9d83176d54abebd8da597ef169524dfa281b/tensorflow/tensorflow/core/common_runtime/gpu/gpu_device.cc#L611)
 
 We modified the function BaseGPUDevice::Compute() to execute the CUDA Graph if the kernel is our custom kernel representing the captured CUDA Graph.
+
+
+## Optimized Scheduling Algorithms for Distributed Training
+
+Reverse first-k scheduling for data-parallel training is implemented in [dp_schedule.py](https://github.com/mlsys-seo/ooo-backprop/blob/1838adf5e780105ff17223b83d95bdc8af34adb2/expr/data_par/code/OOO_backprop/dp_schedule.py#L179), which is used by all the data-parallel training code.
+The scheduling for pipeline-parallel training is in [ModelScheduleHelper.py::schedule()](https://github.com/mlsys-seo/ooo-backprop/blob/396caa1a68738884af6a2199ca91bf4681043c93/expr/pipe_par/code/OOO_backprop/schedule/ModelScheduleHelper.py#L32). Particularly, gradient fast-forwarding is implemented in function [\_schedule_ooo_backpropagation](https://github.com/mlsys-seo/ooo-backprop/blob/396caa1a68738884af6a2199ca91bf4681043c93/expr/pipe_par/code/OOO_backprop/schedule/ModelScheduleHelper.py#L277). 
+Modulo allocation is applied in BERT/GPT model file; specifically we compute the device id [here](https://github.com/mlsys-seo/ooo-backprop/blob/396caa1a68738884af6a2199ca91bf4681043c93/expr/pipe_par/code/OOO_backprop/modeling.py#L867) and allocate the layers of the model to the device [here](https://github.com/mlsys-seo/ooo-backprop/blob/396caa1a68738884af6a2199ca91bf4681043c93/expr/pipe_par/code/OOO_backprop/modeling.py#L874).

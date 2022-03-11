@@ -32,9 +32,19 @@ Repository Structure:
 ```bash
 git clone https://github.com/mlsys-seo/ooo-backprop.git
 cd tensorflow
+
 ./configure
-./build.sh
-./install.sh
+bazel build --config=opt --config=cuda --strip=never //tensorflow/tools/pip_package:build_pip_package
+bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/tmp
+
+# If there is tensorflow already, remove the package and install the newly created package.
+# You need to find out the "Two-Digits" by checking the created directory.
+pip uninstall -y tensorflow
+pip install ~/tmp/tensorflow-2.4.0-cp"Two-Digits"-cp"Two-Digits"m-linux_x86_64.whl
+
+# There may be an issue about protocol buffer package version. Downgrade the package to the version 3.10.0
+pip uninstall -y protobuf
+pip install protobuf==3.10.0
 ```
 For Tensorflow package dependencies, please go to [Tensorflow](https://www.tensorflow.org/install/source?hl=ko).
 

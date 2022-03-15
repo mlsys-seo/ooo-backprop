@@ -28,6 +28,16 @@ To reproduce the experiments in the same environment in our paper, you need to s
 - [Prepared Scripts for Pipeline-Parallel Training](scripts/pipe_par/)
 - [Prepared Scripts for Data-Parallel Training](scripts/data_par/)
 
+## Requirements
+We have prepared and tested the artifact in the following
+hardware/software settings
+
+- A Linux machine with kernel 5.4.0-1063-aws (Ubuntu 18.04)
+- Intel Xeon E5-2686 v4 (2.3 GHz) and NVIDIA V100 GPU.
+- CUDA v11.0 and GPU driver version 450.142.00
+- A GPU cluster consisting of V100 GPUs with NVLink inter-GPU interconnect and 10 or 25Gb inter-node interconnect (i.e., AWS p3.8xlarge or p3.16xlarge).
+- For simply running the experiments, any Linux machine that runs TensorFlow/BytePS is sufficient
+
 ## Install Guide
 If you want to run the experiments in our prepared Docker containers, follow the links in Quickstart above.
 If you prefer to run the experiments in your own Linux machine, you need to compile TensorFlow and BytePS as following.
@@ -35,9 +45,6 @@ If you prefer to run the experiments in your own Linux machine, you need to comp
 ### Tensorflow Install Guide
 ### Prerequisites
 - Bazel 3.1.0
-- A Linux machine with kernel 5.4.0-1063-aws (Ubuntu 18.04)
-- Intel Xeon E5-2686 v4 (2.3 GHz) and NVIDIA V100 GPU.
-- CUDA v11.0 and GPU driver version 450.142.00
 
 ```bash
 export WHEEL_DIR=/your/tensorflow/wheel/path/

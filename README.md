@@ -38,6 +38,8 @@ hardware/software settings
 - A GPU cluster consisting of V100 GPUs with NVLink inter-GPU interconnect and 10 or 25Gb inter-node interconnect (i.e., AWS p3.8xlarge or p3.16xlarge).
 - For simply running the experiments, any Linux machine that runs TensorFlow/BytePS is sufficient
 
+Although CPU or Linux kernel should not affect our optimizations, we suggest to use the above settings to reproduce our experimental results.
+
 ## Install Guide
 If you want to run the experiments in our prepared Docker containers, follow the links in Quickstart above.
 If you prefer to run the experiments in your own Linux machine, you need to compile TensorFlow and BytePS as following.

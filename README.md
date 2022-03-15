@@ -35,6 +35,9 @@ If you prefer to run the experiments in your own Linux machine, you need to comp
 ### Tensorflow Install Guide
 ### Prerequisites
 - Bazel 3.1.0
+- A Linux machine with kernel 5.4.0-1063-aws (Ubuntu 18.04)
+- Intel Xeon E5-2686 v4 (2.3 GHz) and NVIDIA V100 GPU.
+- CUDA v11.0 and GPU driver version 450.142.00
 
 ```bash
 export WHEEL_DIR=/your/tensorflow/wheel/path/

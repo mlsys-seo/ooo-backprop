@@ -101,6 +101,14 @@ GpuExecutable::GpuExecutable(
     if (!str_capture_iter.empty()) {
       capture_iter_ = std::stoi(str_capture_iter);
     }
+
+    const char* cstr_overlap_start_name = std::getenv("OOO_OVERLAP_START");
+    std::string str_overlap_start_name(cstr_overlap_start_name ? cstr_overlap_start_name : "NONE");
+    overlap_start_name_ = str_overlap_start_name;
+
+    const char* cstr_overlap_end_name = std::getenv("OOO_OVERLAP_END");
+    std::string str_overlap_end_name(cstr_overlap_end_name ? cstr_overlap_end_name : "NONE");
+    overlap_end_name_ = str_overlap_end_name;
   }
 }
 

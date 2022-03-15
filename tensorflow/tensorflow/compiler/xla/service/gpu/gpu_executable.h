@@ -208,23 +208,34 @@ class GpuExecutable : public Executable {
   std::string FORWARD_OVERLAP_GRAPH = "FORWARD_OVERLAP_WGRADS";
   std::string DEFAULT_GRAPH = "LAST_GRAPH";
 
+  std::string overlap_start_name_;
+  std::string overlap_end_name_;
+
   bool is_overlap_w_grad_op( std::string op_name, std::string hlo_name  ){
-        if ( op_name.find("B4") != std::string::npos && 
-             op_name.find("Conv2DBackpropFilter") != std::string::npos &&
-             op_name.find("Dummy") == std::string::npos &&
-             hlo_name.find("custom") != std::string::npos ) {
-            return true;
-        } else {
-            return false;
-        }
+    if (overlap_start_name_ == "NONE") {
+      return false;
+    }
+
+    if ( op_name.find(overlap_start_name_) != std::string::npos && 
+        op_name.find("Conv2DBackpropFilter") != std::string::npos &&
+        op_name.find("Dummy") == std::string::npos &&
+        hlo_name.find("custom") != std::string::npos ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   bool is_remain_graph_start( std::string op_name  ){
-        if ( op_name.find("B3") != std::string::npos ) {
-            return true;
-        } else {
-            return false;
-        }
+    if (overlap_end_name_ == "NONE") {
+      return false;
+    }
+
+    if ( op_name.find(overlap_end_name_) != std::string::npos ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   bool is_deleted_op( std::string op_name ){

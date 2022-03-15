@@ -12,7 +12,7 @@ do
             echo "##########################################################"
             echo "  Batch size : ${BATCH}"
             echo "  Growth K : ${GROWTH_K}"
-	        echo "  Num iters : ${ITER}"
+	          echo "  Num iters : ${ITER}"
             echo "##########################################################"
             python /workspace/correctness_test/code/dense_base.py ${BATCH} ${GROWTH_K} ${ITER}
 
@@ -20,12 +20,16 @@ do
             export OOO_CAPTURE_OP="cluster_1_1/xla_run"
             export OOO_CAPTURE_ITER=2
             export OOO_NUM_BLOCK_OVERLAP_FORWARD=88
+            export OOO_OVERLAP_START="B4"
+            export OOO_OVERLAP_END="B3"
             export OOO_USE_SUB_STREAM="true"
             python /workspace/correctness_test/code/dense_ooo.py ${BATCH} ${GROWTH_K} ${ITER}
             unset DO_OOO_BACKPROP
             unset OOO_CAPTURE_OP
             unset OOO_CAPTURE_ITER
             unset OOO_NUM_BLOCK_OVERLAP_FORWARD
+	          unset OOO_OVERLAP_START
+	          unset OOO_OVERLAP_END
             unset OOO_USE_SUB_STREAM
 
 	    python /workspace/correctness_test/code/logit_diff.py

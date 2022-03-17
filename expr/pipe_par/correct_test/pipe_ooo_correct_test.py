@@ -23,6 +23,10 @@ INPUT_SIZE = 1024
 SIZE = 1024
 num_classes = 1024
 
+file_name = "./logit_base"
+if( USE_OOO ):
+    file_name = "./logit_ooo"
+
 def build_model( X, scope_name ):
   with tf.name_scope(scope_name):
     with  tf.compat.v1.variable_scope("BLOCK_1", reuse=tf.compat.v1.AUTO_REUSE):
@@ -63,6 +67,7 @@ with tf.device( '/GPU:1' ):
 gvs = optimizer.compute_gradients(cost, colocate_gradients_with_ops=True)
 train_ops = optimizer.apply_gradients(gvs)
 
+
 if( USE_OOO ):
     util.schedule_ooo_backpropagation( tf.compat.v1.get_default_graph() )
 
@@ -76,5 +81,6 @@ for step in range(100):
       print( "STEP: ", step+1 )
       logit_val = sess.run([logits], feed_dict={X:DUMMY_X, Y:DUMMY_Y})
       print(logit_val)
+      np.save( file_name, logit_val )
       break
 

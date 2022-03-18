@@ -111,14 +111,15 @@ def train():
     sess.graph._unsafe_unfinalize()
     v = sess.run(tf.compat.v1.global_variables_initializer())
 
+    RANK = byteps.rank()
     TRAIN_STEP = args.num_training_step
-    print( "TRAIN_STEP : ", TRAIN_STEP )
+    if( RANK == 0 ):
+        print( "TRAIN_STEP : ", TRAIN_STEP )
     file_name = "./logit_base"
     if( args.reverse_first_k ):
         layer1_com_op = polling_ops[0]
-        print( layer1_com_op )
         TRAIN_STEP += 1
-        ile_name = "./logit_ooo"
+        file_name = "./logit_ooo"
     else:
         layer1_com_op = sync_ops[0][0]
         print( layer1_com_op )
@@ -126,9 +127,12 @@ def train():
     for step in range(TRAIN_STEP):
       _, w_grad_val = sess.run( [train_op, layer1_com_op], feed_dict={X:x_batch, Y:y_batch} )
 
-    print("STEP : ", TRAIN_STEP)
+    #print("STEP : ", TRAIN_STEP)
     result = w_grad_val * LR
-    print( result )
+
+    if( byteps.rank() == 0 ):
+        print( result )
+        np.save( file_name, result )
 
 
 def main(_):

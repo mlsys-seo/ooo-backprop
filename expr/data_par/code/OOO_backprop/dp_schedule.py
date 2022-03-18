@@ -89,9 +89,10 @@ class OOO_ScheduleHelper:
         schedule_ops: Returns list of tf.Operation
     
     """
-    def __init__(self, optimizer):
+    def __init__(self, optimizer, num_worker):
         self.optimizer = optimizer
         self.COMMUNICATION_CONV = 0
+        self.num_worker = num_worker
 
     def _remove_w_grad_dependency(self, op):
         control_dependencies = op.control_inputs
@@ -148,10 +149,17 @@ class OOO_ScheduleHelper:
             op_index = self._get_op_index(g.name)
             new_name = f"CONV_{op_index}"
 
+            dummy_X = tf.stop_gradient(
+                tf.Variable(
+                    tf.zeros( g.shape ), name="input_data", dtype="float"
+                )
+            )
+            
             polling_op_name = f"POLLING_{new_name}"
             polling_op = self._create_polling_op(
-                DUMMY_PLACEHOLDER, op_index, v.shape, polling_op_name
+                dummy_X, op_index, v.shape, polling_op_name
             )
+            polling_op = tf.math.divide( polling_op, self.num_worker )
 
             polling_gvs = []
             polling_gvs.append((polling_op, v))

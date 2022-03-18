@@ -63,7 +63,7 @@ def train():
     global_step = tf.compat.v1.train.get_or_create_global_step(graph)
 
     # cretae OOO data parallel scheduelr 
-    schedule_helper = OOO_ScheduleHelper(optimizer)
+    schedule_helper = OOO_ScheduleHelper(optimizer, byteps.size())
     train_op = schedule_helper.schedule_ops(
         tf.compat.v1.get_default_graph(), X, loss_value, global_step
     )

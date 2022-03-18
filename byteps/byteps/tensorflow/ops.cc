@@ -433,10 +433,13 @@ public:
     while (lock_manager.is_locked(op_index)) {
         usleep(1);
     }
-
-    auto shape_ = get_output_shape(s0, s1, s2, s3);
+   
     ::tensorflow::Tensor* output = nullptr;
-    context->set_output(0, *( communication_manager.get_savedTensors(op_index) ));
+    if( communication_manager.get_savedTensors(op_index) ){
+        context->set_output(0, *( communication_manager.get_savedTensors(op_index) )); 
+    } else {
+        context->set_output(0, context->input(0));
+    } 
   }
 };
 

@@ -696,7 +696,9 @@ def _GradientsHelper(ys,
                       None,
                       gradient_uid,
                       ignore_existing=True):
-                    in_grads = control_flow_ops.tuple(in_grads)
+                    ''' Customizing by OOO_Backprop '''
+                    in_grads = _AsList(in_grads)
+                    #in_grads = control_flow_ops.tuple(in_grads)
           _LogOpGradients(op, out_grads, in_grads)
         else:
           # If no grad_fn is defined or none of out_grads is available,

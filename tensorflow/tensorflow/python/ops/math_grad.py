@@ -1691,17 +1691,17 @@ def _MatMulGrad(op, grad):
   a = math_ops.conj(op.inputs[0])
   b = math_ops.conj(op.inputs[1])
   if not t_a and not t_b:
-    grad_a = gen_math_ops.mat_mul(grad, b, transpose_b=True)
-    grad_b = gen_math_ops.mat_mul(a, grad, transpose_a=True)
+    grad_a = gen_math_ops.mat_mul(grad, b, transpose_b=True, name="OUT_GRAD")
+    grad_b = gen_math_ops.mat_mul(a, grad, transpose_a=True, name="WEIGHT_GRAD")
   elif not t_a and t_b:
-    grad_a = gen_math_ops.mat_mul(grad, b)
-    grad_b = gen_math_ops.mat_mul(grad, a, transpose_a=True)
+    grad_a = gen_math_ops.mat_mul(grad, b, name="OUT_GRAD")
+    grad_b = gen_math_ops.mat_mul(grad, a, transpose_a=True, name="WEIGHT_GRAD")
   elif t_a and not t_b:
-    grad_a = gen_math_ops.mat_mul(b, grad, transpose_b=True)
-    grad_b = gen_math_ops.mat_mul(a, grad)
+    grad_a = gen_math_ops.mat_mul(b, grad, transpose_b=True, name="OUT_GRAD")
+    grad_b = gen_math_ops.mat_mul(a, grad, name="WEIGHT_GRAD")
   elif t_a and t_b:
-    grad_a = gen_math_ops.mat_mul(b, grad, transpose_a=True, transpose_b=True)
-    grad_b = gen_math_ops.mat_mul(grad, a, transpose_a=True, transpose_b=True)
+    grad_a = gen_math_ops.mat_mul(b, grad, transpose_a=True, transpose_b=True, name="OUT_GRAD")
+    grad_b = gen_math_ops.mat_mul(grad, a, transpose_a=True, transpose_b=True, name="WEIGHT_GRAD")
   return grad_a, grad_b
 
 

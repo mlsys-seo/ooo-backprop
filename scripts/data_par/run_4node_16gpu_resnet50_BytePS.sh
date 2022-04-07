@@ -32,7 +32,7 @@ export DEBUG_PRINT=0
 export DEBUG_C_PRINT=0
 
 # set up network
-export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_data_parallel:latest"
+export DOCKER_IMAGE="hanyangbdsl/ooo_backprop_data_parallel:latest"
 export SSH_KEY_PATH="SSH_KEY_PATH"
 export SSH_ID="ACCOUNT_ID"
 export DMLC_INTERFACE="NETWORK INTERFACE"

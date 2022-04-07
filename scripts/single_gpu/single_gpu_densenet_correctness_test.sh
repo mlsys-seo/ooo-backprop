@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_single_gpu:latest"
+DOCKER_IMAGE="hanyangbdsl/ooo_backprop_single_gpu:latest"
 
 sudo docker pull $DOCKER_IMAGE
 

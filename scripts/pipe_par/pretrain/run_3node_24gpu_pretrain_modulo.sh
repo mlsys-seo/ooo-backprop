@@ -26,7 +26,7 @@ export NUM_NODE=${#NODE_HOST_LIST[@]}
 export NUM_WORKER_PER_NODE=8
 
 # set up network
-export DOCKER_IMAGE="public.ecr.aws/bdsldocker/ooo_backprop_pipeline_parallel:latest"
+export DOCKER_IMAGE="hanyangbdsl/ooo_backprop_pipeline_parallel:latest"
 export SSH_KEY_PATH="SSH_KEY_PATH"
 export SSH_ID="ACCOUNT_ID"
 

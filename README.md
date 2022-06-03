@@ -116,3 +116,22 @@ OOO BackProp is evaluated with twelve neural network and five public datasets. T
 ### Data-parallel Training.
 
 ![datap](https://user-images.githubusercontent.com/78071764/151532987-d56e3311-407d-406e-b389-ab811267eda9.png)
+
+## Publication
+
+Hyungjun Oh, Junyeol Lee, Hyeongju Kim, and Jiwon Seo, [Out-Of-Order BackProp:
+An Effective Scheduling Technique for Deep Learning](https://dl.acm.org/doi/pdf/10.1145/3492321.3519563) in European Conference on Computer Systems (EuroSys), 2022
+
+### Citation
+
+If you use this work, please cite our paper published in European Conference on Computer Systems (EuroSys), 2022
+
+```bibtex
+@inproceedings{oh2022out,
+  title={Out-of-order backprop: an effective scheduling technique for deep learning},
+  author={Oh, Hyungjun and Lee, Junyeol and Kim, Hyeongju and Seo, Jiwon},
+  booktitle={Proceedings of the Seventeenth European Conference on Computer Systems},
+  pages={435--452},
+  year={2022}
+}
+```
